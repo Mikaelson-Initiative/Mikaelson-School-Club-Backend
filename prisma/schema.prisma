@@ -1,0 +1,427 @@
+// prisma/schema.prisma
+// ─────────────────────────────────────────────────────────────────────────────
+// Database schema definition for Mikaelson School Club.
+// Supports soft-delete constraints on relevant tables and audit trails.
+// ─────────────────────────────────────────────────────────────────────────────
+
+datasource db {
+  provider  = "postgresql"
+  //url       = env("DATABASE_URL")
+  //directUrl = env("DIRECT_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── User and Authentication ──────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  SUPERADMIN
+  STUDENT
+  MENTOR
+  CHAMPION
+}
+
+enum AuthProvider {
+  CREDENTIALS
+  FIREBASE
+}
+
+enum AccountStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id                      String                  @id @default(uuid())
+  email                   String                  @unique
+  name                    String?
+  role                    Role                    @default(ADMIN)
+  provider                AuthProvider            @default(CREDENTIALS)
+  passwordHash            String?
+  firebaseUid             String?                 @unique
+  avatarUrl               String?
+  emailVerified           DateTime?
+  lastLoginAt             DateTime?
+  loginCount              Int                     @default(0)
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  isDeleted               Boolean                 @default(false)
+  deletedAt               DateTime?
+  auditLogs               AuditLog[]
+  gradeLevel              String?
+  chapterId               String?
+  chapter                 SchoolChapter?          @relation(fields: [chapterId], references: [id])
+  approvedById            String?
+  approvedBy              User?                   @relation("AccountApproval", fields: [approvedById], references: [id])
+  approvedUsers           User[]                  @relation("AccountApproval")
+  accountStatus           AccountStatus           @default(ACTIVE)
+  accountabilityPartnerId String?
+  accountabilityPartner   User?                   @relation("AccountabilityPartner", fields: [accountabilityPartnerId], references: [id])
+  accountabilityPartnerOf User[]                  @relation("AccountabilityPartner")
+  habits                  Habit[]
+  habitLogs               HabitLog[]
+  meetingAttendance       MeetingAttendance[]
+  projectMembers          ProjectMember[]
+  accountabilityMembers   AccountabilityMember[]
+
+  @@index([isDeleted])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+}
+
+model VerificationToken {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+}
+
+// ── Core Business Logic Models (Soft Delete Enabled) ─────────────────────────
+
+enum ChapterStatus {
+  REGISTERED
+  ONBOARDING
+  ACTIVE
+  INACTIVE
+}
+
+model SchoolChapter {
+  id               String        @id @default(uuid())
+  name             String
+  city             String
+  country          String
+  status           ChapterStatus @default(REGISTERED)
+  studentsCount    Int           @default(0)
+  coordinatorName  String?
+  coordinatorEmail String?
+  coordinatorPhone String?
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  isDeleted        Boolean       @default(false)
+  deletedAt        DateTime?
+  isChapterOfMonth Boolean       @default(false)
+  chapterOfMonthSince DateTime?
+  members          User[]
+  events           Event[]
+  projects         Project[]
+
+  @@index([isDeleted])
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  SCHEDULED
+  TRAINING
+  LAUNCHED
+  REJECTED
+}
+
+model Application {
+  id               String            @id @default(uuid())
+  schoolName       String
+  contactName      String
+  role             String
+  email            String
+  phone            String?
+  location         String
+  studentsEstimate Int               @default(0)
+  message          String?
+  status           ApplicationStatus @default(PENDING)
+  adminNotes       String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  isDeleted        Boolean           @default(false)
+  deletedAt        DateTime?
+
+  @@index([isDeleted])
+  @@index([email, schoolName])
+}
+
+model Event {
+  id              String              @id @default(uuid())
+  title           String
+  date            DateTime
+  time            String
+  location        String
+  description     String
+  isPast          Boolean             @default(false)
+  attendees       String?
+  registrationUrl String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  isDeleted       Boolean             @default(false)
+  deletedAt       DateTime?
+  chapterId       String?
+  chapter         SchoolChapter?      @relation(fields: [chapterId], references: [id])
+  recurrenceRule  String?
+  attendance      MeetingAttendance[]
+}
+
+model BlogPost {
+  id              String    @id @default(uuid())
+  title           String
+  category        String
+  author          String
+  excerpt         String
+  content         String
+  imageUrl        String?
+  isPublished     Boolean   @default(false)
+  publishedAt     DateTime?
+  viewCount       Int       @default(0)
+  metaTitle       String?
+  metaDescription String?
+  slug            String    @unique
+  readingTime     Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+
+  @@index([isDeleted])
+  @@index([slug])
+}
+
+model TeamMember {
+  id          String    @id @default(uuid())
+  name        String
+  role        String
+  email       String    @unique
+  avatarUrl   String?
+  bio         String?
+  sortOrder   Int       @default(0)
+  linkedinUrl String?
+  twitterUrl  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+
+  @@index([isDeleted])
+}
+
+// ── Public Contact System ────────────────────────────────────────────────────
+
+enum ContactType {
+  SCHOOL_ENQUIRY
+  PARTNERSHIP
+  MEDIA
+  GENERAL
+}
+
+enum MessageStatus {
+  UNREAD
+  READ
+  RESPONDED
+}
+
+model ContactMessage {
+  id        String        @id @default(uuid())
+  name      String
+  email     String
+  type      ContactType   @default(GENERAL)
+  message   String
+  status    MessageStatus @default(UNREAD)
+  replyNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+// ── Auditing and Archives ────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actorEmail String?
+  action     String
+  model      String
+  recordId   String
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([createdAt])
+  @@index([actorId])
+  @@index([model, recordId])
+}
+
+model AuditLogArchive {
+  id         String   @id
+  actorId    String?
+  actorEmail String?
+  action     String
+  model      String
+  recordId   String
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime
+
+  @@index([createdAt])
+}
+
+// ── Habit Tracking ───────────────────────────────────────────────────────────
+
+model Habit {
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  name      String
+  createdAt DateTime   @default(now())
+  isActive  Boolean    @default(true)
+  logs      HabitLog[]
+}
+
+model HabitLog {
+  id         String   @id @default(uuid())
+  habitId    String
+  habit      Habit    @relation(fields: [habitId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  loggedDate DateTime @db.Date
+  createdAt  DateTime @default(now())
+
+  @@unique([habitId, loggedDate])
+}
+
+// ── Accountability Hub ────────────────────────────────────────────────────────
+
+model AccountabilityGroup {
+  id        String                 @id @default(uuid())
+  name      String
+  createdAt DateTime               @default(now())
+  members   AccountabilityMember[]
+}
+
+model AccountabilityMember {
+  id        String              @id @default(uuid())
+  groupId   String
+  group     AccountabilityGroup @relation(fields: [groupId], references: [id])
+  userId    String
+  user      User                @relation(fields: [userId], references: [id])
+  joinedAt  DateTime            @default(now())
+
+  @@unique([groupId, userId])
+}
+
+// ── Meeting Attendance ────────────────────────────────────────────────────────
+
+model MeetingAttendance {
+  id        String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+}
+
+// ── Skill Lab Lessons ─────────────────────────────────────────────────────────
+
+model Lesson {
+  id               String    @id @default(uuid())
+  title            String
+  content          String
+  category         String
+  estimatedMinutes Int       @default(0)
+  skillTags        String[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  isDeleted        Boolean   @default(false)
+  deletedAt        DateTime?
+
+  @@index([isDeleted])
+}
+
+// ── Community Projects ────────────────────────────────────────────────────────
+
+model Project {
+  id          String          @id @default(uuid())
+  chapterId   String
+  chapter     SchoolChapter   @relation(fields: [chapterId], references: [id])
+  title       String
+  description String
+  term        String
+  status      ProjectStatus   @default(PLANNING)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  isDeleted   Boolean         @default(false)
+  deletedAt   DateTime?
+  members     ProjectMember[]
+
+  @@index([isDeleted])
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+
+  @@unique([projectId, userId])
+}
+
+model RateLimitBreach {
+  id        String   @id @default(uuid())
+  ip        String
+  route     String
+  userAgent String?
+  limitKey  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ip])
+}
+
+model VolunteerApplication {
+  id         String            @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  role       String
+  org        String?
+  location   String?
+  motivation String?           @db.Text
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  isDeleted  Boolean           @default(false)
+  deletedAt  DateTime?
+
+  @@index([isDeleted])
+}
+

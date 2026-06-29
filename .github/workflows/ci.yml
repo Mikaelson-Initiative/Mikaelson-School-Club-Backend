@@ -1,0 +1,77 @@
+# .github/workflows/ci.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# CI pipeline: runs on every push and pull request to main.
+# Gates: lint → type-check → tests
+# A failing gate blocks merge.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint · Typecheck · Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Node.js ──────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── 3. Install dependencies ───────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Generate Prisma client ─────────────────────────────────────────────
+      # Required so TypeScript can resolve @prisma/client types
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      # ── 5. Lint ───────────────────────────────────────────────────────────────
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      # ── 6. Type check ─────────────────────────────────────────────────────────
+      - name: Type check (tsc)
+        run: npx tsc --noEmit
+
+      # ── 7. Unit & integration tests ───────────────────────────────────────────
+      - name: Run tests (Vitest)
+        run: npx vitest run --coverage
+        env:
+          # Stub env vars so env.ts validation passes in CI
+          DATABASE_URL:              postgresql://test:test@localhost:5432/test
+          DIRECT_DATABASE_URL:       postgresql://test:test@localhost:5432/test
+          NEXTAUTH_SECRET:           ci-secret-that-is-at-least-32-characters-long!!
+          NEXTAUTH_URL:              http://localhost:3000
+          FIREBASE_PROJECT_ID:       ci-project
+          FIREBASE_CLIENT_EMAIL:     ci@ci-project.iam.gserviceaccount.com
+          FIREBASE_PRIVATE_KEY:      "-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----\n"
+          UPSTASH_REDIS_REST_URL:    https://ci.upstash.io
+          UPSTASH_REDIS_REST_TOKEN:  ci-token
+          RESEND_API_KEY:            re_ci_test_key
+          CRON_SECRET:               ci-cron-secret-that-is-at-least-32-chars!!
+          ALLOWED_ORIGINS:           http://localhost:3000
+          NODE_ENV:                  test
+
+      # ── 8. Upload coverage report ─────────────────────────────────────────────
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
