@@ -20,6 +20,9 @@ type MockPrisma = {
   event: {
     count: ReturnType<typeof vi.fn>;
   };
+  volunteerApplication: {
+    count: ReturnType<typeof vi.fn>;
+  };
 };
 
 const mockPrisma = prisma as unknown as MockPrisma;
@@ -37,6 +40,7 @@ describe("metrics.service", () => {
       mockPrisma.contactMessage.count.mockResolvedValue(2);
       mockPrisma.blogPost.count.mockResolvedValue(4);
       mockPrisma.event.count.mockResolvedValue(3);
+      mockPrisma.volunteerApplication.count.mockResolvedValue(10);
 
       const res = await getDashboardMetrics();
       expect(res.schoolsRegistered).toBe(5);
