@@ -3,6 +3,8 @@ import { ok, serverError } from "@/lib/api-helpers";
 import { listAuditLogs }   from "@/services/audit.service";
 import { captureError }    from "@/lib/sentry";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

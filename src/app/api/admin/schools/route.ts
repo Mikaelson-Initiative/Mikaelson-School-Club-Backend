@@ -5,6 +5,8 @@ import { createSchoolSchema }                                from "@/lib/validat
 import { listAdminSchools, createSchool }                   from "@/services/school.service";
 import { captureError }                                      from "@/lib/sentry";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
