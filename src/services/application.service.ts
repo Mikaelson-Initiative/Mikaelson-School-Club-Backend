@@ -63,7 +63,7 @@ export async function submitApplication(
   });
 
   // Emails — fire-and-forget, never fail the request
-  await Promise.allSettled([
+  const emailResults = await Promise.allSettled([
     sendApplicationConfirmation({
       to:          input.email,
       contactName: input.contactName,
@@ -81,6 +81,16 @@ export async function submitApplication(
       applicationId:    application.id,
     }),
   ]);
+
+  emailResults.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.error(`[DEBUG EMAIL] Failed to send email ${index}:`, result.reason);
+    } else if (result.value && result.value.error) {
+      console.error(`[DEBUG EMAIL] Resend API error for email ${index}:`, result.value.error);
+    } else {
+      console.log(`[DEBUG EMAIL] Successfully sent email ${index}:`, result.value?.data);
+    }
+  });
 
   return { success: true, id: application.id };
 }
