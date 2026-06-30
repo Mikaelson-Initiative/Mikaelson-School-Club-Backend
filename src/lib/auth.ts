@@ -81,9 +81,7 @@ export async function credentialsAuthorize(credentials: Record<string, any> | un
 
 
 export const authConfig: NextAuthConfig = {
-  // Disable trustHost in production so NextAuth uses the explicit NEXTAUTH_URL 
-  // (which will be the frontend domain) instead of the Vercel backend host header.
-  trustHost: process.env.NODE_ENV !== "production",
+  trustHost: true,
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60, // 8 hours
