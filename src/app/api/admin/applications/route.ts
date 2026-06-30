@@ -3,6 +3,8 @@ import { requireSession, ok, serverError } from "@/lib/api-helpers";
 import { captureError } from "@/lib/sentry";
 import { listApplications }    from "@/services/application.service";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const session = await requireSession();
