@@ -88,6 +88,14 @@ vi.mock("@/lib/prisma", () => {
         findFirst: vi.fn(),
         update: vi.fn(),
       },
+      volunteerApplication: {
+        create: vi.fn(),
+        findMany: vi.fn(),
+        findFirst: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
+        count: vi.fn(),
+      },
       auditLog: {
         create: vi.fn(),
         findMany: vi.fn(),
