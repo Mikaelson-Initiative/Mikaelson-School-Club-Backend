@@ -469,11 +469,7 @@ describe("createUserSchema", () => {
     ).toBe(true);
   });
 
-  it("does not require password for FIREBASE provider", () => {
-    expect(
-      createUserSchema.safeParse({ email: "admin@test.com", provider: "FIREBASE" }).success
-    ).toBe(true);
-  });
+
 
   it("rejects password shorter than 8 characters", () => {
     expect(
@@ -488,7 +484,8 @@ describe("createUserSchema", () => {
   it("defaults role to ADMIN", () => {
     const res = createUserSchema.safeParse({
       email:    "admin@test.com",
-      provider: "FIREBASE",
+      provider: "CREDENTIALS",
+      password: "Password123!",
     });
     expect(res.success && res.data.role).toBe("ADMIN");
   });
@@ -497,7 +494,8 @@ describe("createUserSchema", () => {
     expect(
       createUserSchema.safeParse({
         email:    "super@test.com",
-        provider: "FIREBASE",
+        provider: "CREDENTIALS",
+        password: "Password123!",
         role:     "SUPERADMIN",
       }).success
     ).toBe(true);
@@ -507,7 +505,8 @@ describe("createUserSchema", () => {
     expect(
       createUserSchema.safeParse({
         email:    "admin@test.com",
-        provider: "FIREBASE",
+        provider: "CREDENTIALS",
+        password: "Password123!",
         role:     "VIEWER",
       }).success
     ).toBe(false);

@@ -1,7 +1,7 @@
 // src/__tests__/integration/auth.integration.test.ts
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { prisma } from "@/lib/prisma";
-import { authConfig, credentialsAuthorize, firebaseAuthorize } from "@/lib/auth";
+import { authConfig, credentialsAuthorize } from "@/lib/auth";
 import { signupUser, verifyEmail } from "@/services/user.service";
 import bcrypt from "bcryptjs";
 import { getSession } from "@/lib/api-helpers";
@@ -92,23 +92,7 @@ describe("auth system (integration)", () => {
     });
   });
 
-  describe("Firebase login hardening (authorize callback)", () => {
-    it("rejects Firebase login if the linked user is soft-deleted", async () => {
-      const user = await prisma.user.create({
-        data: {
-          email: "deleted-fb@test.com",
-          role: "ADMIN",
-          firebaseUid: "firebase-uid-deleted",
-          isDeleted: true,
-          deletedAt: new Date(),
-        },
-      });
 
-      await expect(
-        firebaseAuthorize({ idToken: "some-token" })
-      ).rejects.toThrow("This account has been deleted.");
-    });
-  });
 
   describe("API Endpoint tests", () => {
     // We import routes directly to test them as pure functions or mock Request/Response

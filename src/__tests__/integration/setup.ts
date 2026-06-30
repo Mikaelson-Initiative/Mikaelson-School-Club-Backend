@@ -34,13 +34,7 @@ vi.mock("@/lib/sentry", () => ({
   clearSentryUser: vi.fn(),
 }));
 
-vi.mock("@/lib/firebase-admin", () => ({
-  verifyFirebaseToken: vi.fn().mockResolvedValue({
-    uid: "firebase-uid-deleted",
-    email: "deleted-fb@test.com",
-    name: "FB Deleted",
-  }),
-}));
+
 
 // Import AFTER env vars are set
 import { prisma } from "@/lib/prisma";

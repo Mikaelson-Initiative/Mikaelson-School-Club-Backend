@@ -11,9 +11,7 @@ process.env.DATABASE_URL           = "postgresql://test:test@localhost:5432/test
 process.env.DIRECT_DATABASE_URL    = "postgresql://test:test@localhost:5432/test_db";
 process.env.NEXTAUTH_SECRET        = "test-secret-that-is-at-least-32-characters-long!!";
 process.env.NEXTAUTH_URL           = "http://localhost:3000";
-process.env.FIREBASE_PROJECT_ID    = "test-project";
-process.env.FIREBASE_CLIENT_EMAIL  = "test@test-project.iam.gserviceaccount.com";
-process.env.FIREBASE_PRIVATE_KEY   = "-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----\n";
+
 process.env.UPSTASH_REDIS_REST_URL   = "https://test.upstash.io";
 process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
 process.env.RESEND_API_KEY         = "re_test_key";
@@ -164,6 +162,9 @@ vi.mock("@/lib/prisma", () => {
       $queryRawUnsafe: vi.fn(),
       $executeRawUnsafe: vi.fn(),
       $transaction: vi.fn((val) => Promise.all(val)),
+      volunteerApplication: {
+        count: vi.fn().mockResolvedValue(10),
+      },
     },
   };
 });
@@ -205,17 +206,5 @@ vi.mock("next-auth", () => ({
     auth: vi.fn(),
     signIn: vi.fn(),
     signOut: vi.fn(),
-  })),
-}));
-
-// Mock firebase-admin to avoid ASN.1 parse errors on dummy keys
-vi.mock("firebase-admin", () => ({
-  apps: [],
-  initializeApp: vi.fn(),
-  credential: {
-    cert: vi.fn(),
-  },
-  auth: vi.fn(() => ({
-    verifyIdToken: vi.fn(),
   })),
 }));

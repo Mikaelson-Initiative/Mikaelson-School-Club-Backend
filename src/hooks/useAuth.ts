@@ -43,14 +43,6 @@ export function useCurrentUser() {
 export function useAuthActions() {
   const [isMutating, setIsMutating] = useState(false);
 
-  const loginWithFirebase = async (idToken: string) => {
-    try {
-      setIsMutating(true);
-      return await apiClient.post<{ success: boolean }>("/api/auth/firebase-signin", { idToken });
-    } finally {
-      setIsMutating(false);
-    }
-  };
 
   const signup = async (payload: {
     email: string;
@@ -106,7 +98,7 @@ export function useAuthActions() {
   };
 
   return {
-    loginWithFirebase,
+
     signup,
     logout,
     requestPasswordReset,

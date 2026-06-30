@@ -27,18 +27,7 @@ const schema = z.object({
     .min(32, "NEXTAUTH_SECRET must be at least 32 characters"),
   NEXTAUTH_URL: z.string().url("NEXTAUTH_URL must be a valid URL"),
 
-  // ── Firebase Admin SDK ────────────────────────────────────────────────────
-  FIREBASE_PROJECT_ID: z.string().min(1, "FIREBASE_PROJECT_ID is required"),
-  FIREBASE_CLIENT_EMAIL: z
-    .string()
-    .email("FIREBASE_CLIENT_EMAIL must be a valid email"),
-  FIREBASE_PRIVATE_KEY: z
-    .string()
-    .min(1, "FIREBASE_PRIVATE_KEY is required")
-    .refine(
-      (k) => k.includes("BEGIN PRIVATE KEY"),
-      "FIREBASE_PRIVATE_KEY does not look like a valid PEM key"
-    ),
+
 
   // ── Upstash Redis ─────────────────────────────────────────────────────────
   UPSTASH_REDIS_REST_URL: z

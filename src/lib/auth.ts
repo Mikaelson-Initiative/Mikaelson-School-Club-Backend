@@ -10,7 +10,7 @@ import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { writeAuditLog } from "./audit";
-import { verifyFirebaseToken } from "@/lib/firebase-admin";
+
 import { env } from "./env";
 
 export async function credentialsAuthorize(credentials: Record<string, any> | undefined) {
@@ -78,81 +78,7 @@ export async function credentialsAuthorize(credentials: Record<string, any> | un
   return { id: user.id, email: user.email, name: user.name ?? undefined, image: user.avatarUrl ?? undefined, role: user.role };
 }
 
-export async function firebaseAuthorize(credentials: Record<string, any> | undefined) {
-  if (!credentials?.idToken) throw new Error("Firebase ID token is required.");
 
-  const decoded = await verifyFirebaseToken(credentials.idToken as string);
-  if (!decoded) throw new Error("Invalid or expired Firebase token.");
-
-  let user = await prisma.user.findUnique({
-    where: { firebaseUid: decoded.uid },
-  });
-
-  if (user) {
-    if (user.isDeleted) {
-      throw new Error("This account has been deleted.");
-    }
-    if (user.accountStatus === "PENDING_APPROVAL") {
-      throw new Error("Your account is pending approval by a mentor.");
-    }
-    if (user.accountStatus === "SUSPENDED") {
-      throw new Error("This account has been suspended.");
-    }
-  }
-
-  if (!user) {
-    // Link Firebase UID to a pre-authorised email
-    const byEmail = await prisma.user.findUnique({
-      where: { email: decoded.email ?? "" },
-    });
-
-    if (!byEmail) {
-      throw new Error(
-        "This account is not authorised. Contact a SUPERADMIN to be added."
-      );
-    }
-
-    if (byEmail.isDeleted) {
-      throw new Error("This account has been deleted.");
-    }
-
-    if (byEmail.accountStatus === "PENDING_APPROVAL") {
-      throw new Error("Your account is pending approval by a mentor.");
-    }
-
-    if (byEmail.accountStatus === "SUSPENDED") {
-      throw new Error("This account has been suspended.");
-    }
-
-    user = await prisma.user.update({
-      where: { id: byEmail.id },
-      data: {
-        firebaseUid:  decoded.uid,
-        provider:     "FIREBASE",
-        avatarUrl:    decoded.picture ?? byEmail.avatarUrl,
-        lastLoginAt:  new Date(),
-        loginCount:   { increment: 1 },
-        emailVerified: byEmail.emailVerified ?? new Date(),
-      },
-    });
-  } else {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date(), loginCount: { increment: 1 } },
-    });
-  }
-
-  await writeAuditLog({
-    actorId:    user.id,
-    actorEmail: user.email,
-    action:     "LOGIN",
-    model:      "User",
-    recordId:   user.id,
-    after:      { provider: "FIREBASE", firebaseUid: decoded.uid },
-  });
-
-  return { id: user.id, email: user.email, name: user.name ?? decoded.name, image: user.avatarUrl ?? decoded.picture, role: user.role };
-}
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -178,15 +104,7 @@ export const authConfig: NextAuthConfig = {
       authorize: credentialsAuthorize,
     }),
 
-    // ── Provider 2: Firebase ID token ─────────────────────────────────────
-    CredentialsProvider({
-      id: "firebase",
-      name: "Firebase",
-      credentials: {
-        idToken: { label: "Firebase ID Token", type: "text" },
-      },
-      authorize: firebaseAuthorize,
-    }),
+
   ],
 
   callbacks: {
