@@ -10,13 +10,13 @@ import { env } from "@/lib/env";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
-const FROM = "Mikaelson Initiative <hello@mikaelsoninitiative.org>";
+const FROM = "Mikaelson School Club <msc@mikaelsoninitiative.org>";
 
 const CONTACT_ROUTING: Record<string, string> = {
   PARTNERSHIP: "partners@mikaelsoninitiative.org",
   MEDIA: "media@mikaelsoninitiative.org",
-  SCHOOL_ENQUIRY: "hello@mikaelsoninitiative.org",
-  GENERAL: "hello@mikaelsoninitiative.org",
+  SCHOOL_ENQUIRY: "msc@mikaelsoninitiative.org",
+  GENERAL: "msc@mikaelsoninitiative.org",
 };
 
 const STATUS_MESSAGES: Record<string, string> = {
@@ -155,7 +155,7 @@ export async function sendApplicationConfirmation(data: {
     <p>Thank you for applying to launch a Mikaelson School Club chapter at <strong>${data.schoolName}</strong>.</p>
     <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
     <p>If you have questions in the meantime, reply to this email or contact us at
-       <a href="mailto:hello@mikaelsoninitiative.org">hello@mikaelsoninitiative.org</a>.</p>
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
     <p>With excitement,<br/>The Mikaelson Initiative Team</p>
   `);
 
@@ -199,7 +199,7 @@ export async function sendApplicationAlert(data: {
 
   return resend.emails.send({
     from: FROM,
-    to: "hello@mikaelsoninitiative.org",
+    to: "msc@mikaelsoninitiative.org",
     subject: `New application: ${data.schoolName}`,
     html,
   });
@@ -214,7 +214,7 @@ export async function sendContactAlert(data: {
   message: string;
   messageId: string;
 }) {
-  const to = CONTACT_ROUTING[data.type] ?? "hello@mikaelsoninitiative.org";
+  const to = CONTACT_ROUTING[data.type] ?? "msc@mikaelsoninitiative.org";
   const html = buildEmailTemplate(`
     <h2>${data.type.replace(/_/g, " ")} Enquiry</h2>
     <p><strong>From:</strong> ${data.name} &lt;${data.email}&gt;</p>
@@ -271,7 +271,7 @@ export async function sendStatusUpdateEmail(data: {
     <p>Hi ${data.contactName},</p>
     <p>${body}</p>
     <p>If you have questions, reply to this email or contact us at
-       <a href="mailto:hello@mikaelsoninitiative.org">hello@mikaelsoninitiative.org</a>.</p>
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
     <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
   `);
 
@@ -369,7 +369,7 @@ export async function sendVolunteerConfirmation(data: {
     <p>Thank you for applying to volunteer with the Mikaelson Initiative.</p>
     <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
     <p>If you have questions in the meantime, reply to this email or contact us at
-       <a href="mailto:hello@mikaelsoninitiative.org">hello@mikaelsoninitiative.org</a>.</p>
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
     <p>With excitement,<br/>The Mikaelson Initiative Team</p>
   `);
 
@@ -412,7 +412,7 @@ export async function sendVolunteerAlert(data: {
 
   return resend.emails.send({
     from: FROM,
-    to: "hello@mikaelsoninitiative.org",
+    to: "msc@mikaelsoninitiative.org",
     subject: `New volunteer: ${data.name}`,
     html,
   });
@@ -429,7 +429,7 @@ export async function sendVolunteerStatusUpdateEmail(data: {
     <p>Hi ${data.name},</p>
     <p>${body}</p>
     <p>If you have questions, reply to this email or contact us at
-       <a href="mailto:hello@mikaelsoninitiative.org">hello@mikaelsoninitiative.org</a>.</p>
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
     <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
   `);
 
