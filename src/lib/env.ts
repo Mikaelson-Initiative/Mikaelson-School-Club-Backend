@@ -96,7 +96,7 @@ if (!parsed.success) {
   );
 
   // Throw in production so deployment fails fast; warn in dev for flexibility
-  if (process.env.NODE_ENV === "production" && process.env.SKIP_ENV_VALIDATION !== "true" && process.env.SKIP_ENV_VALIDATION !== "1") {
+  if (process.env.NODE_ENV === "production") {
     throw new Error("Invalid environment variables. Deployment aborted.");
   }
 }
