@@ -78,13 +78,29 @@ const config = {
           },
         ],
       },
-      // Cache API responses conservatively
+      // Cache API responses conservatively and enforce CORS
       {
-        source: "/api/(.*)",
+        source: "/api/:path*",
         headers: [
           {
             key: "Cache-Control",
             value: "no-store, must-revalidate",
+          },
+          {
+            key: "Access-Control-Allow-Origin",
+            value: process.env.ALLOWED_ORIGINS || "*", // Vercel environment variable
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization, X-Requested-With",
+          },
+          {
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
           },
         ],
       },
