@@ -499,7 +499,7 @@ All templates live in `src/lib/mailer.ts`, sent via Resend. Six functions:
 | Function | Trigger | Recipient |
 |---|---|---|
 | `sendApplicationConfirmation` | New application submitted | Applicant — says "3 working days" (matches frontend copy, do not change without checking the form) |
-| `sendApplicationAlert` | New application submitted | `hello@mikaelsoninitiative.org` |
+| `sendApplicationAlert` | New application submitted | `msc@mikaelsoninitiative.org` |
 | `sendStatusUpdateEmail` | Admin changes application status | Applicant — only fires for REVIEWED/SCHEDULED/TRAINING/LAUNCHED/REJECTED |
 | `sendContactAlert` | New contact message | Routed by type: PARTNERSHIP→partners@, MEDIA→media@, else→hello@ |
 | `sendContactAutoReply` | New contact message | The person who submitted the form |

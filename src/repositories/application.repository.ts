@@ -21,8 +21,6 @@ export interface CreateApplicationData {
 export interface UpdateApplicationData {
   status?:       ApplicationStatus;
   adminNotes?:   string | null;
-  lastUpdatedById?: string | null;
-  lastUpdatedAt?:   Date;
 }
 
 export interface ListApplicationsOptions {

@@ -136,8 +136,6 @@ export async function updateApplication(
   const updated = await applicationRepository.update(id, {
     ...(input.status     ? { status: input.status }         : {}),
     ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
-    lastUpdatedById: ctx.actorId ?? null,
-    lastUpdatedAt:   new Date(),
   });
 
   await writeAuditLog({
