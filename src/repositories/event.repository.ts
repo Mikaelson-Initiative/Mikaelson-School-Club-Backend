@@ -7,6 +7,7 @@ export interface CreateEventData {
   location:         string;
   description:      string;
   isPast?:          boolean;
+  category?:        string;
   attendees?:       string | null;
   registrationUrl?: string | null;
   chapterId?:       string | null;

@@ -7,6 +7,13 @@ import { auth } from "./auth";
 
 // ── Standard JSON response builders ──────────────────────────────────────────
 
+export class AppError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+    this.name = "AppError";
+  }
+}
+
 export function ok<T>(data: T, status = 200): Response {
   return Response.json(data, { status });
 }

@@ -28,6 +28,10 @@ export async function createEvent(input: CreateEventInput, ctx: ActorContext): P
   const event = await eventRepository.create({
     ...input,
     date: new Date(input.date),
+    time: input.time ?? "",
+    location: input.location ?? "",
+    description: input.description ?? "",
+    category: input.category ?? "Other",
   });
 
   await writeAuditLog({
