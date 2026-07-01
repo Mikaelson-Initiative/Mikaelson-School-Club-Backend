@@ -65,6 +65,7 @@ const ALLOWED_ORIGINS = buildAllowedOrigins();
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return true; // server-to-server; no Origin header = allowed
+  if (origin === "https://hasbulla4school.mikaelsoninitiative.org" || origin === "https://club.mikaelsoninitiative.org") return true;
   return ALLOWED_ORIGINS.has(origin);
 }
 
