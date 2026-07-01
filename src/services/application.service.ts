@@ -136,13 +136,13 @@ export async function updateApplication(
 
   let updated;
 
-  if (input.status === "ACCEPTED") {
-    // Transaction for ACCEPTED status
+  if (input.status === "LAUNCHED") {
+    // Transaction for LAUNCHED status
     updated = await prisma.$transaction(async (tx) => {
       const app = await tx.application.update({
         where: { id },
         data: {
-          status: "ACCEPTED",
+          status: "LAUNCHED",
           ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
         },
       });
