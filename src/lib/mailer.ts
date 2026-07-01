@@ -36,7 +36,7 @@ function buildEmailTemplate(contentHtml: string): string {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mikaelson Initiative</title>
+        <title>Mikaelson School Club</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -56,7 +56,7 @@ function buildEmailTemplate(contentHtml: string): string {
             overflow: hidden;
           }
           .header {
-            background-color: #0f172a;
+            background-color: #003e45;
             padding: 24px;
             text-align: center;
             color: #ffffff;
@@ -129,13 +129,13 @@ function buildEmailTemplate(contentHtml: string): string {
       <body>
         <div class="container">
           <div class="header">
-            <h1>MIKAELSON INITIATIVE</h1>
+            <h1>MIKAELSON SCHOOL CLUB</h1>
           </div>
           <div class="content">
             ${contentHtml}
           </div>
           <div class="footer">
-            &copy; ${new Date().getFullYear()} Mikaelson Initiative. All rights reserved.
+            &copy; ${new Date().getFullYear()} Mikaelson School Club. All rights reserved.
           </div>
         </div>
       </body>
@@ -156,7 +156,7 @@ export async function sendApplicationConfirmation(data: {
     <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
     <p>If you have questions in the meantime, reply to this email or contact us at
        <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
-    <p>With excitement,<br/>The Mikaelson Initiative Team</p>
+    <p>With excitement,<br/>The Mikaelson School Club Team</p>
   `);
 
   return resend.emails.send({
@@ -246,7 +246,7 @@ export async function sendContactAutoReply(data: {
     <p>Thank you for reaching out. We have received your ${
       data.type === "PARTNERSHIP" ? "partnership proposal" : "message"
     } and will respond within <strong>2 business days</strong>.</p>
-    <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
   `);
 
   return resend.emails.send({
@@ -272,7 +272,7 @@ export async function sendStatusUpdateEmail(data: {
     <p>${body}</p>
     <p>If you have questions, reply to this email or contact us at
        <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
-    <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
   `);
 
   return resend.emails.send({
@@ -300,7 +300,7 @@ export async function sendPasswordResetEmail(data: {
     </p>
     <p>This link expires in <strong>1 hour</strong>. If you did not request this, you can safely ignore this email.</p>
     <p>For security, do not share this link with anyone.</p>
-    <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;"/>
     <p style="font-size: 12px; color: #64748b; text-align: center;">
       If the button doesn't work, copy and paste this URL into your browser:<br/>
@@ -333,7 +333,7 @@ export async function sendEmailVerificationEmail(data: {
       </a>
     </p>
     <p>This link expires in <strong>24 hours</strong>. If you did not sign up for this account, you can safely ignore this email.</p>
-    <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;"/>
     <p style="font-size: 12px; color: #64748b; text-align: center;">
       If the button doesn't work, copy and paste this URL into your browser:<br/>
@@ -370,7 +370,7 @@ export async function sendVolunteerConfirmation(data: {
     <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
     <p>If you have questions in the meantime, reply to this email or contact us at
        <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
-    <p>With excitement,<br/>The Mikaelson Initiative Team</p>
+    <p>With excitement,<br/>The Mikaelson School Club Team</p>
   `);
 
   return resend.emails.send({
@@ -430,7 +430,7 @@ export async function sendVolunteerStatusUpdateEmail(data: {
     <p>${body}</p>
     <p>If you have questions, reply to this email or contact us at
        <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
-    <p>Warm regards,<br/>The Mikaelson Initiative Team</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
   `);
 
   return resend.emails.send({
