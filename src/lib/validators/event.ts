@@ -15,21 +15,24 @@ export const createEventSchema = z.object({
 
   time: z
     .string({ message: "Time is required." })
-    .min(3, "Time must be at least 3 characters.")
     .max(50, "Time must be under 50 characters.")
-    .trim(),
+    .trim()
+    .optional()
+    .or(z.literal("")),
 
   location: z
     .string({ message: "Location is required." })
-    .min(2, "Location must be at least 2 characters.")
     .max(300, "Location must be under 300 characters.")
-    .trim(),
+    .trim()
+    .optional()
+    .or(z.literal("")),
 
   description: z
     .string({ message: "Description is required." })
-    .min(10, "Description must be at least 10 characters.")
     .max(10000, "Description must be under 10000 characters.")
-    .trim(),
+    .trim()
+    .optional()
+    .or(z.literal("")),
 
   category: z
     .string()
