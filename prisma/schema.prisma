@@ -132,6 +132,7 @@ enum ApplicationStatus {
   SCHEDULED
   TRAINING
   LAUNCHED
+  ACCEPTED
   REJECTED
 }
 
@@ -421,7 +422,17 @@ model VolunteerApplication {
   updatedAt  DateTime          @updatedAt
   isDeleted  Boolean           @default(false)
   deletedAt  DateTime?
-
   @@index([isDeleted])
+}
+
+// ── Global Platform Stats ────────────────────────────────────────────────────
+
+model PlatformStat {
+  id             String   @id @default("global")
+  totalSchools   Int      @default(0)
+  activeChapters Int      @default(0)
+  totalStudents  Int      @default(0)
+  retentionRate  Int      @default(94)
+  updatedAt      DateTime @updatedAt
 }
 

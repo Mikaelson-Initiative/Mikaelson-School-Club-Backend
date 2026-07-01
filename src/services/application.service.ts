@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { applicationRepository }                      from "@/repositories/application.repository";
+import { prisma }                                     from "@/lib/prisma";
 import { writeAuditLog }                              from "@/lib/audit";
 import { sendApplicationConfirmation, sendApplicationAlert, sendStatusUpdateEmail } from "@/lib/mailer";
 import { captureError }                               from "@/lib/sentry";
@@ -133,10 +134,58 @@ export async function updateApplication(
   const existing = await applicationRepository.findById(id);
   if (!existing) return { success: false, status: 404, error: "Application not found." };
 
-  const updated = await applicationRepository.update(id, {
-    ...(input.status     ? { status: input.status }         : {}),
-    ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
-  });
+  let updated;
+
+  if (input.status === "ACCEPTED") {
+    // Transaction for ACCEPTED status
+    updated = await prisma.$transaction(async (tx) => {
+      const app = await tx.application.update({
+        where: { id },
+        data: {
+          status: "ACCEPTED",
+          ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
+        },
+      });
+
+      // Split location arbitrarily or use as city for simplicity
+      await tx.schoolChapter.create({
+        data: {
+          name: app.schoolName,
+          city: app.location,
+          country: "Unknown", // Required by schema, we don't have this field
+          coordinatorName: app.contactName,
+          coordinatorEmail: app.email,
+          coordinatorPhone: app.phone,
+          studentsCount: app.studentsEstimate,
+          status: "REGISTERED",
+        },
+      });
+
+      await tx.platformStat.upsert({
+        where: { id: "global" },
+        update: {
+          totalSchools: { increment: 1 },
+          activeChapters: { increment: 1 },
+          totalStudents: { increment: app.studentsEstimate },
+        },
+        create: {
+          id: "global",
+          totalSchools: 10, // 9 + 1
+          activeChapters: 13, // 12 + 1
+          totalStudents: 480 + app.studentsEstimate,
+          retentionRate: 94,
+        },
+      });
+
+      return app;
+    });
+  } else {
+    // Normal update
+    updated = await applicationRepository.update(id, {
+      ...(input.status     ? { status: input.status }         : {}),
+      ...(input.adminNotes !== undefined ? { adminNotes: input.adminNotes } : {}),
+    });
+  }
 
   await writeAuditLog({
     actorId:    ctx.actorId,
