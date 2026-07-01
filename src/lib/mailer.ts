@@ -197,12 +197,134 @@ export async function sendApplicationAlert(data: {
     </p>
   `);
 
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: `New application: ${data.schoolName}`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send school application alert:", error);
+  }
+}
+
+export async function sendStudentConfirmation(data: {
+  to: string;
+  name: string;
+}) {
+  const html = buildEmailTemplate(`
+    <p>Hi ${data.name},</p>
+    <p>Thank you for applying to join the Mikaelson School Club as a student.</p>
+    <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
+    <p>If you have questions in the meantime, reply to this email or contact us at
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
+    <p>With excitement,<br/>The Mikaelson School Club Team</p>
+  `);
+
   return resend.emails.send({
     from: FROM,
-    to: "msc@mikaelsoninitiative.org",
-    subject: `New application: ${data.schoolName}`,
+    to: data.to,
+    subject: "We received your student application — Mikaelson School Club",
     html,
   });
+}
+
+export async function sendStudentAlert(data: {
+  name: string;
+  school: string;
+  year: string;
+  city: string;
+  goal?: string;
+  applicationId: string;
+}) {
+  const html = buildEmailTemplate(`
+    <h2>New Student Application</h2>
+    <table>
+      <tr><td>Name</td><td>${data.name}</td></tr>
+      <tr><td>School</td><td>${data.school}</td></tr>
+      <tr><td>Year</td><td>${data.year}</td></tr>
+      <tr><td>City</td><td>${data.city}</td></tr>
+      <tr><td>Goal</td><td>${data.goal ?? "—"}</td></tr>
+      <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
+    </table>
+    <p style="text-align: center;">
+      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+        View in admin dashboard →
+      </a>
+    </p>
+  `);
+
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: `New student application: ${data.name}`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send student application alert:", error);
+  }
+}
+
+export async function sendMentorConfirmation(data: {
+  to: string;
+  name: string;
+}) {
+  const html = buildEmailTemplate(`
+    <p>Hi ${data.name},</p>
+    <p>Thank you for applying to train as a Champion for the Mikaelson School Club.</p>
+    <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
+    <p>If you have questions in the meantime, reply to this email or contact us at
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
+    <p>With excitement,<br/>The Mikaelson School Club Team</p>
+  `);
+
+  return resend.emails.send({
+    from: FROM,
+    to: data.to,
+    subject: "We received your Champion application — Mikaelson School Club",
+    html,
+  });
+}
+
+export async function sendMentorAlert(data: {
+  name: string;
+  email: string;
+  role: string;
+  school: string;
+  city: string;
+  experience?: string;
+  applicationId: string;
+}) {
+  const html = buildEmailTemplate(`
+    <h2>New Champion Application</h2>
+    <table>
+      <tr><td>Name</td><td>${data.name}</td></tr>
+      <tr><td>Email</td><td>${data.email}</td></tr>
+      <tr><td>Role</td><td>${data.role}</td></tr>
+      <tr><td>School</td><td>${data.school}</td></tr>
+      <tr><td>City</td><td>${data.city}</td></tr>
+      <tr><td>Experience</td><td>${data.experience ?? "—"}</td></tr>
+      <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
+    </table>
+    <p style="text-align: center;">
+      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+        View in admin dashboard →
+      </a>
+    </p>
+  `);
+
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: `New champion application: ${data.name}`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send champion application alert:", error);
+  }
 }
 
 // ── Contact emails ────────────────────────────────────────────────────────────

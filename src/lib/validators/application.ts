@@ -91,3 +91,24 @@ export const updateApplicationSchema = z.object({
 });
 
 export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>;
+
+export const studentApplySchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters.").max(100).trim(),
+  school: z.string().min(2, "School name is required.").max(200).trim(),
+  year: z.string().min(1, "Year is required.").max(50).trim(),
+  city: z.string().min(2, "City is required.").max(100).trim(),
+  goal: z.string().max(2000).trim().optional().nullable(),
+});
+
+export type StudentApplyInput = z.infer<typeof studentApplySchema>;
+
+export const mentorApplySchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters.").max(100).trim(),
+  email: z.string().email("Invalid email address.").max(254).trim().toLowerCase(),
+  role: z.string().min(2, "Role is required.").max(100).trim(),
+  school: z.string().min(2, "School name is required.").max(200).trim(),
+  city: z.string().min(2, "City is required.").max(100).trim(),
+  experience: z.string().max(2000).trim().optional().nullable(),
+});
+
+export type MentorApplyInput = z.infer<typeof mentorApplySchema>;

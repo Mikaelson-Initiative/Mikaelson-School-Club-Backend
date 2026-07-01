@@ -147,12 +147,15 @@ export async function updateApplication(
         },
       });
 
-      // Split location arbitrarily or use as city for simplicity
+      const locationParts = app.location.split(',').map(s => s.trim());
+      const parsedCountry = locationParts.length > 1 ? locationParts.pop()! : "Unknown";
+      const parsedCity = locationParts.join(', ') || app.location;
+
       await tx.schoolChapter.create({
         data: {
           name: app.schoolName,
-          city: app.location,
-          country: "Unknown", // Required by schema, we don't have this field
+          city: parsedCity,
+          country: parsedCountry,
           coordinatorName: app.contactName,
           coordinatorEmail: app.email,
           coordinatorPhone: app.phone,

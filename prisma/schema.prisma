@@ -439,6 +439,37 @@ model VolunteerApplication {
   @@index([isDeleted])
 }
 
+model StudentApplication {
+  id         String            @id @default(uuid())
+  name       String
+  school     String
+  year       String
+  city       String
+  goal       String?           @db.Text
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  isDeleted  Boolean           @default(false)
+  deletedAt  DateTime?
+  @@index([isDeleted])
+}
+
+model MentorApplication {
+  id         String            @id @default(uuid())
+  name       String
+  email      String
+  role       String
+  school     String
+  city       String
+  experience String?           @db.Text
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  isDeleted  Boolean           @default(false)
+  deletedAt  DateTime?
+  @@index([isDeleted])
+}
+
 // ── Global Platform Stats ────────────────────────────────────────────────────
 
 model PlatformStat {
