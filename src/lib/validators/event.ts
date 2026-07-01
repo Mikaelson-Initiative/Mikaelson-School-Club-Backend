@@ -31,6 +31,12 @@ export const createEventSchema = z.object({
     .max(10000, "Description must be under 10000 characters.")
     .trim(),
 
+  category: z
+    .string()
+    .max(50, "Category must be under 50 characters.")
+    .trim()
+    .optional(),
+
   isPast: z.boolean().default(false),
 
   attendees: z

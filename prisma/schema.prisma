@@ -164,6 +164,7 @@ model Event {
   time            String
   location        String
   description     String
+  category        String              @default("Other")
   isPast          Boolean             @default(false)
   attendees       String?
   registrationUrl String?
