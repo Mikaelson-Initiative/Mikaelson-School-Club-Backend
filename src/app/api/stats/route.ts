@@ -7,7 +7,7 @@ export async function GET() {
     const [stats, totalSchools, activeChapters, studentsAgg] = await Promise.all([
       prisma.platformStat.findUnique({ where: { id: "global" } }),
       prisma.schoolChapter.count(),
-      prisma.schoolChapter.count({ where: { status: "ACTIVE" } }), // Or whatever status means active, maybe we can just count all or ACTIVE. In the frontend we used 'REGISTERED' and 'ACTIVE' for live chapters. Let's just use total count for both or check schema. The user expects active chapters to be the ones launched. We can check where status is not INACTIVE or just count them all if they are all active by default. Wait, what does the schema say for ChapterStatus?
+      prisma.schoolChapter.count({ where: { status: { not: "INACTIVE" } } }), 
       prisma.schoolChapter.aggregate({ _sum: { studentsCount: true } })
     ]);
 
