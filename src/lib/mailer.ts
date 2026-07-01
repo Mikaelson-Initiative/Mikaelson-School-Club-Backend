@@ -162,7 +162,7 @@ export async function sendApplicationConfirmation(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "We received your application — Mikaelson Initiative",
+    subject: "We received your application — Mikaelson School Club",
     html,
   });
 }
@@ -252,7 +252,7 @@ export async function sendContactAutoReply(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "We got your message — Mikaelson Initiative",
+    subject: "We got your message — Mikaelson School Club",
     html,
   });
 }
@@ -311,7 +311,7 @@ export async function sendPasswordResetEmail(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "Reset your password — Mikaelson Initiative",
+    subject: "Reset your password — Mikaelson School Club",
     html,
   });
 }
@@ -344,7 +344,7 @@ export async function sendEmailVerificationEmail(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "Verify your email address — Mikaelson Initiative",
+    subject: "Verify your email address — Mikaelson School Club",
     html,
   });
 }
@@ -376,7 +376,7 @@ export async function sendVolunteerConfirmation(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "We received your volunteer application — Mikaelson Initiative",
+    subject: "We received your volunteer application — Mikaelson School Club",
     html,
   });
 }
@@ -436,7 +436,7 @@ export async function sendVolunteerStatusUpdateEmail(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "Update on your volunteer application — Mikaelson Initiative",
+    subject: "Update on your volunteer application — Mikaelson School Club",
     html,
   });
 }
