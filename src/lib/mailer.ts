@@ -477,7 +477,7 @@ export async function sendEventRegistrationAlert(data: {
     return resend.emails.send({
       from: FROM,
       to: "msc@mikaelsoninitiative.org",
-      subject: \`New registration for \${data.eventName}\`,
+      subject: `New registration for ${data.eventName}`,
       html,
     });
   } catch (error) {
