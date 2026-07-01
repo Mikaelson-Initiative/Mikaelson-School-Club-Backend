@@ -2,7 +2,7 @@ import { ok, badRequest, serverError, created } from "@/lib/api-helpers";
 import { captureError } from "@/lib/sentry";
 import { eventRegistrationSchema } from "@/lib/validators/event-registration";
 import { createEventRegistration } from "@/services/event-registration.service";
-import { sendEventRegistrationConfirmation } from "@/lib/mailer";
+import { sendEventRegistrationConfirmation, sendEventRegistrationAlert } from "@/lib/mailer";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,13 +19,22 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     // Format date beautifully
     const eventDate = new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    // Send confirmation email
+    // Send confirmation email to guest
     await sendEventRegistrationConfirmation({
       email: registration.email,
       name: registration.name,
       eventTitle: event.title,
       eventDate,
       eventTime: event.time || 'TBA',
+    });
+
+    // Send alert to admin
+    await sendEventRegistrationAlert({
+      eventId: event.id,
+      eventName: event.title,
+      guestName: registration.name,
+      guestEmail: registration.email,
+      schoolName: registration.schoolName || undefined,
     });
 
     return created({ success: true, id: registration.id });

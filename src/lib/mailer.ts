@@ -451,6 +451,40 @@ export async function sendEventRegistrationConfirmation(data: {
   }
 }
 
+export async function sendEventRegistrationAlert(data: {
+  eventId: string;
+  eventName: string;
+  guestName: string;
+  guestEmail: string;
+  schoolName?: string;
+}) {
+  const html = buildEmailTemplate(`
+    <h2>New Event Registration</h2>
+    <table>
+      <tr><td>Event</td><td>${data.eventName}</td></tr>
+      <tr><td>Guest Name</td><td>${data.guestName}</td></tr>
+      <tr><td>Guest Email</td><td>${data.guestEmail}</td></tr>
+      <tr><td>School/Org</td><td>${data.schoolName ?? "—"}</td></tr>
+    </table>
+    <p style="text-align: center;">
+      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+        View in admin dashboard →
+      </a>
+    </p>
+  `);
+
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: \`New registration for \${data.eventName}\`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send event registration alert:", error);
+  }
+}
+
 export async function sendVolunteerStatusUpdateEmail(data: {
   to: string;
   name: string;
