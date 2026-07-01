@@ -410,12 +410,45 @@ export async function sendVolunteerAlert(data: {
     </p>
   `);
 
-  return resend.emails.send({
-    from: FROM,
-    to: "msc@mikaelsoninitiative.org",
-    subject: `New volunteer: ${data.name}`,
-    html,
-  });
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: `New volunteer: ${data.name}`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send volunteer application alert:", error);
+  }
+}
+
+export async function sendEventRegistrationConfirmation(data: {
+  email: string;
+  name: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+}) {
+  const content = `
+    <h2>Event Registration Confirmed</h2>
+    <p>Hi ${data.name},</p>
+    <p>You have successfully registered for <strong>${data.eventTitle}</strong>!</p>
+    <p><strong>Date:</strong> ${data.eventDate}<br/>
+       <strong>Time:</strong> ${data.eventTime || 'TBA'}</p>
+    <p>We look forward to seeing you there. If you have any questions or need to cancel, please reply to this email.</p>
+  `;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM,
+      to: [data.email],
+      subject: `Registration Confirmed: ${data.eventTitle}`,
+      html: buildEmailTemplate(content),
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error("Failed to send event registration confirmation:", error);
+  }
 }
 
 export async function sendVolunteerStatusUpdateEmail(data: {

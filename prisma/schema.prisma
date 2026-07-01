@@ -176,6 +176,19 @@ model Event {
   chapter         SchoolChapter?      @relation(fields: [chapterId], references: [id])
   recurrenceRule  String?
   attendance      MeetingAttendance[]
+  registrations   EventRegistration[]
+}
+
+model EventRegistration {
+  id         String   @id @default(uuid())
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id])
+  name       String
+  email      String
+  schoolName String?
+  createdAt  DateTime @default(now())
+
+  @@unique([eventId, email])
 }
 
 model BlogPost {
