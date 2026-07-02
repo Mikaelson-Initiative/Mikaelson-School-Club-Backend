@@ -78,14 +78,10 @@ const config = {
           },
         ],
       },
-      // Cache API responses conservatively and enforce CORS
+      // Enforce CORS on all API routes
       {
         source: "/api/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "no-store, must-revalidate",
-          },
           {
             key: "Access-Control-Allow-Origin",
             value: process.env.ALLOWED_ORIGINS || "*", // Vercel environment variable
@@ -101,6 +97,17 @@ const config = {
           {
             key: "Access-Control-Allow-Credentials",
             value: "true",
+          },
+        ],
+      },
+      // Never cache admin/authenticated responses. Public read routes
+      // (e.g. /api/stats, /api/team) set their own cache headers.
+      {
+        source: "/api/admin/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, must-revalidate",
           },
         ],
       },

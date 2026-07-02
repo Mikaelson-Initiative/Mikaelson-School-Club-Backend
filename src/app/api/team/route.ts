@@ -1,10 +1,13 @@
 // src/app/api/team/route.ts
 // GET /api/team — Public
 
-export const dynamic = "force-dynamic";
+// Cached at the edge: served instantly and revalidated in the background so
+// visitors don't wait on a cold function/database.
+export const revalidate = 120;
 
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { ok, serverError } from "@/lib/api-helpers";
+import { serverError } from "@/lib/api-helpers";
 import { captureError } from "@/lib/sentry";
 
 export async function GET() {
@@ -14,7 +17,6 @@ export async function GET() {
         id: true,
         name: true,
         role: true,
-        email: true,
         avatarUrl: true,
         bio: true,
         sortOrder: true,
@@ -24,7 +26,9 @@ export async function GET() {
       orderBy: { sortOrder: "asc" },
     });
 
-    return ok(members);
+    return NextResponse.json(members, {
+      headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=86400" },
+    });
   } catch (err) {
     captureError(err, { route: "GET /api/team" });
     return serverError();

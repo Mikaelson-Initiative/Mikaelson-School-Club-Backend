@@ -219,7 +219,7 @@ model TeamMember {
   id          String    @id @default(uuid())
   name        String
   role        String
-  email       String    @unique
+  email       String?   @unique
   avatarUrl   String?
   bio         String?
   sortOrder   Int       @default(0)
