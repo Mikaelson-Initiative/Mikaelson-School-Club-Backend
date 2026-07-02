@@ -16,11 +16,13 @@ export const createTeamMemberSchema = z.object({
     .trim(),
 
   email: z
-    .string({ message: "Email is required." })
+    .string()
     .email("A valid email address is required.")
     .max(254, "Email is too long.")
     .trim()
-    .toLowerCase(),
+    .toLowerCase()
+    .optional()
+    .nullable(),
 
   avatarUrl: z
     .string()
