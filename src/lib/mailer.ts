@@ -15,9 +15,10 @@ const FROM = "Mikaelson School Club <msc@mikaelsoninitiative.org>";
 // Public admin dashboard lives on the frontend, not on this API host (NEXTAUTH_URL).
 // The dashboard is a single-page app without per-record deep links, so all
 // "view in dashboard" buttons point at its root.
-const ADMIN_DASHBOARD_URL =
-  process.env.ADMIN_DASHBOARD_URL ||
-  "https://hasbulla4school.mikaelsoninitiative.org/admin-login";
+const ADMIN_DASHBOARD_URL = "https://hasbulla4school.mikaelsoninitiative.org/admin-login";
+
+// Volunteers book an intro call at a time that suits them via this Google Calendar link.
+const VOLUNTEER_BOOKING_URL = "https://calendar.app.google/iga81buSXkG7HWEA7";
 
 const CONTACT_ROUTING: Record<string, string> = {
   PARTNERSHIP: "partners@mikaelsoninitiative.org",
@@ -496,7 +497,12 @@ export async function sendVolunteerConfirmation(data: {
   const html = buildEmailTemplate(`
     <p>Hi ${data.name},</p>
     <p>Thank you for applying to volunteer with the Mikaelson Initiative.</p>
-    <p>Our team will review your application and reach out within <strong>3 working days</strong> to discuss next steps.</p>
+    <p>The next step is a short intro call so we can get to know you and find the right fit. Please book a call through this link at a time that works for you:</p>
+    <p style="text-align: center;">
+      <a href="${VOLUNTEER_BOOKING_URL}" class="btn">Book a call →</a>
+    </p>
+    <p>If the button doesn't work, copy this link into your browser:<br/>
+       <a href="${VOLUNTEER_BOOKING_URL}">${VOLUNTEER_BOOKING_URL}</a></p>
     <p>If you have questions in the meantime, reply to this email or contact us at
        <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
     <p>With excitement,<br/>The Mikaelson School Club Team</p>
@@ -505,7 +511,7 @@ export async function sendVolunteerConfirmation(data: {
   return resend.emails.send({
     from: FROM,
     to: data.to,
-    subject: "We received your volunteer application — Mikaelson School Club",
+    subject: "Book your volunteer intro call — Mikaelson School Club",
     html,
   });
 }
