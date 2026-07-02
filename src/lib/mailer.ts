@@ -476,7 +476,7 @@ export async function sendEmailVerificationEmail(data: {
 const VOLUNTEER_STATUS_MESSAGES: Record<string, string> = {
   REVIEWED: "Your volunteer application has been reviewed by our team.",
   SCHEDULED: "We would like to schedule a call with you to discuss volunteering. Check your inbox for a calendar invite.",
-  TRAINING: "Your champion volunteer training programme has begun. Welcome aboard!",
+  TRAINING: "Congratulations! Your application has been accepted and you are now officially part of the team. Your champion volunteer onboarding and training process begins now. Welcome aboard!",
   LAUNCHED: "Your status is now set to Launched. Thank you for your support!",
   REJECTED:
     "After careful consideration, we are unable to proceed with your volunteer application at this time.",
