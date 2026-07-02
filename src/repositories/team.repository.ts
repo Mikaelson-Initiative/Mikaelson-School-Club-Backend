@@ -29,7 +29,7 @@ export const teamRepository = {
   async listPublic() {
     return prisma.teamMember.findMany({
       select: {
-        id: true, name: true, role: true, avatarUrl: true,
+        id: true, name: true, role: true, email: true, avatarUrl: true,
         bio: true, sortOrder: true, linkedinUrl: true, twitterUrl: true,
       },
       orderBy: { sortOrder: "asc" },
