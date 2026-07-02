@@ -9,10 +9,8 @@ export interface CreateContactData {
 }
 
 export interface UpdateContactData {
-  status?:      MessageStatus;
-  replyNote?:   string | null;
-  handledById?: string | null;
-  handledAt?:   Date;
+  status?:    MessageStatus;
+  replyNote?: string | null;
 }
 
 export interface ListContactsOptions {

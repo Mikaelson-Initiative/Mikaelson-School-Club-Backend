@@ -12,6 +12,13 @@ const resend = new Resend(env.RESEND_API_KEY);
 
 const FROM = "Mikaelson School Club <msc@mikaelsoninitiative.org>";
 
+// Public admin dashboard lives on the frontend, not on this API host (NEXTAUTH_URL).
+// The dashboard is a single-page app without per-record deep links, so all
+// "view in dashboard" buttons point at its root.
+const ADMIN_DASHBOARD_URL =
+  process.env.ADMIN_DASHBOARD_URL ||
+  "https://hasbulla4school.mikaelsoninitiative.org/admin-login";
+
 const CONTACT_ROUTING: Record<string, string> = {
   PARTNERSHIP: "partners@mikaelsoninitiative.org",
   MEDIA: "media@mikaelsoninitiative.org",
@@ -191,7 +198,7 @@ export async function sendApplicationAlert(data: {
       <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
     </table>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin/applications/${data.applicationId}" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>
@@ -249,7 +256,7 @@ export async function sendStudentAlert(data: {
       <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
     </table>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>
@@ -309,7 +316,7 @@ export async function sendMentorAlert(data: {
       <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
     </table>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>
@@ -343,7 +350,7 @@ export async function sendContactAlert(data: {
     <p><strong>Message:</strong></p>
     <blockquote>${data.message}</blockquote>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin/contacts/${data.messageId}" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>
@@ -526,7 +533,7 @@ export async function sendVolunteerAlert(data: {
       <tr><td>Application ID</td><td>${data.applicationId}</td></tr>
     </table>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin/volunteers/${data.applicationId}" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>
@@ -589,7 +596,7 @@ export async function sendEventRegistrationAlert(data: {
       <tr><td>School/Org</td><td>${data.schoolName ?? "—"}</td></tr>
     </table>
     <p style="text-align: center;">
-      <a href="${env.NEXTAUTH_URL}/admin" class="btn">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
         View in admin dashboard →
       </a>
     </p>

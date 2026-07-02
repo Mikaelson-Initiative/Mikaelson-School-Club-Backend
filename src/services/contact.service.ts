@@ -72,8 +72,6 @@ export async function updateContact(
   const updated = await contactRepository.update(id, {
     ...(input.status    ? { status: input.status as MessageStatus } : {}),
     ...(input.replyNote !== undefined ? { replyNote: input.replyNote } : {}),
-    handledById: ctx.actorId ?? null,
-    handledAt:   new Date(),
   });
 
   await writeAuditLog({

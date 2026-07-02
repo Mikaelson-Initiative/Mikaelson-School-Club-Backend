@@ -186,7 +186,11 @@ export async function middleware(req: NextRequest) {
 
   // ── 4. Admin routes: verify session token ──────────────────────────────────
   if (tier === "admin") {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET! });
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET!,
+      secureCookie: process.env.NODE_ENV === "production",
+    });
 
     if (!token || (token.role !== "ADMIN" && token.role !== "SUPERADMIN")) {
       if (pathname.startsWith("/api/")) {
@@ -230,7 +234,11 @@ export async function middleware(req: NextRequest) {
 
   // ── 4.5 Admin upload rate limiting ─────────────────────────────────────────
   if (tier === "admin_upload") {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET! });
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET!,
+      secureCookie: process.env.NODE_ENV === "production",
+    });
 
     if (!token || (token.role !== "ADMIN" && token.role !== "SUPERADMIN")) {
       const res = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
