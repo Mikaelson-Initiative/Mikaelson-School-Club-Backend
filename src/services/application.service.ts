@@ -164,21 +164,9 @@ export async function updateApplication(
         },
       });
 
-      await tx.platformStat.upsert({
-        where: { id: "global" },
-        update: {
-          totalSchools: { increment: 1 },
-          activeChapters: { increment: 1 },
-          totalStudents: { increment: app.studentsEstimate },
-        },
-        create: {
-          id: "global",
-          totalSchools: 10, // 9 + 1
-          activeChapters: 13, // 12 + 1
-          totalStudents: 480 + app.studentsEstimate,
-          retentionRate: 94,
-        },
-      });
+      // NOTE: platform totals (schools/chapters/students) are derived live from
+      // SchoolChapter in GET /api/stats, so there is nothing to increment here.
+      // PlatformStat is only consulted for retentionRate.
 
       return app;
     });

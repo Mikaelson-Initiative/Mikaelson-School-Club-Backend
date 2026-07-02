@@ -305,8 +305,10 @@ describe("createEventSchema", () => {
     expect(createEventSchema.safeParse({ ...base, date: "not-a-date" }).success).toBe(false);
   });
 
-  it("rejects description under 10 characters", () => {
-    expect(createEventSchema.safeParse({ ...base, description: "Short" }).success).toBe(false);
+  it("allows a short or omitted description (description is optional)", () => {
+    expect(createEventSchema.safeParse({ ...base, description: "Short" }).success).toBe(true);
+    const { description: _drop, ...noDescription } = base;
+    expect(createEventSchema.safeParse(noDescription).success).toBe(true);
   });
 
   it("defaults isPast to false", () => {

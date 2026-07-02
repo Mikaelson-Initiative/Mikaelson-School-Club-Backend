@@ -169,7 +169,8 @@ export async function middleware(req: NextRequest) {
   if (
     (method === "POST" || method === "PATCH" || method === "PUT") &&
     pathname.startsWith("/api/") &&
-    !pathname.startsWith("/api/admin/upload") // upload uses multipart
+    !pathname.startsWith("/api/admin/upload") && // upload uses multipart
+    !pathname.startsWith("/api/auth")            // NextAuth may post form-urlencoded
   ) {
     const contentType = req.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
