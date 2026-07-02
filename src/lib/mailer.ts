@@ -15,9 +15,7 @@ const FROM = "Mikaelson School Club <msc@mikaelsoninitiative.org>";
 // Public admin dashboard lives on the frontend, not on this API host (NEXTAUTH_URL).
 // The dashboard is a single-page app without per-record deep links, so all
 // "view in dashboard" buttons point at its root.
-const ADMIN_DASHBOARD_URL =
-  process.env.ADMIN_DASHBOARD_URL ||
-  "https://hasbulla4school.mikaelsoninitiative.org/admin-login";
+const ADMIN_DASHBOARD_URL = "https://hasbulla4school.mikaelsoninitiative.org/admin-login";
 
 const CONTACT_ROUTING: Record<string, string> = {
   PARTNERSHIP: "partners@mikaelsoninitiative.org",
