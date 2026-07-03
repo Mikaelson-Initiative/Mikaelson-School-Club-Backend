@@ -103,6 +103,42 @@ export async function updateUser(
   return { success: true, id: updated.id, role: updated.role };
 }
 
+// The signed-in user changes their own password after confirming the current one.
+export async function changeOwnPassword(
+  userId:  string,
+  input:   { currentPassword: string; newPassword: string },
+  ctx:     ActorContext
+): Promise<
+  | { success: true }
+  | { success: false; status: number; error: string }
+> {
+  const user = await userRepository.findById(userId);
+  if (!user) return { success: false, status: 404, error: "User not found." };
+
+  if (user.provider !== "CREDENTIALS" || !user.passwordHash) {
+    return { success: false, status: 400, error: "This account has no password to change." };
+  }
+
+  const valid = await bcrypt.compare(input.currentPassword, user.passwordHash);
+  if (!valid) return { success: false, status: 400, error: "Current password is incorrect." };
+
+  const passwordHash = await bcrypt.hash(input.newPassword, 12);
+  await userRepository.update(userId, { passwordHash });
+
+  await writeAuditLog({
+    actorId:    ctx.actorId,
+    actorEmail: ctx.actorEmail,
+    action:     "UPDATE",
+    model:      "User",
+    recordId:   userId,
+    after:      { passwordChanged: true },
+    ip:         ctx.ip,
+    userAgent:  ctx.userAgent,
+  });
+
+  return { success: true };
+}
+
 export async function deleteUser(
   id: string,
   ctx: ActorContext,
