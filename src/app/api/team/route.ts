@@ -1,9 +1,9 @@
 // src/app/api/team/route.ts
 // GET /api/team — Public
 
-// Cached at the edge: served instantly and revalidated in the background so
-// visitors don't wait on a cold function/database.
-export const revalidate = 120;
+// Briefly cached at the edge for speed, but with a short window so admin edits
+// (team members, order, etc.) appear within a minute rather than lingering.
+export const revalidate = 30;
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -27,7 +27,7 @@ export async function GET() {
     });
 
     return NextResponse.json(members, {
-      headers: { "Cache-Control": "public, max-age=0, s-maxage=120, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60" },
     });
   } catch (err) {
     captureError(err, { route: "GET /api/team" });
