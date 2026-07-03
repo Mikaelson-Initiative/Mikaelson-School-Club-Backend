@@ -61,6 +61,17 @@ export const updateUserSchema = z.object({
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
+// POST /api/auth/change-password — the signed-in admin changes their own password
+export const changePasswordSchema = z.object({
+  currentPassword: z.string({ message: "Current password is required." }).min(1, "Current password is required."),
+  newPassword: z
+    .string({ message: "New password is required." })
+    .min(8, "New password must be at least 8 characters.")
+    .max(128, "New password must be under 128 characters."),
+});
+
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
 // POST /api/auth/reset-request
 export const resetRequestSchema = z.object({
   email: z

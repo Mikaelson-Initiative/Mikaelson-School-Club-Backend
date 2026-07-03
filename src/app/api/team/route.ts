@@ -27,7 +27,7 @@ export async function GET() {
     });
 
     return NextResponse.json(members, {
-      headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": "public, max-age=0, s-maxage=120, stale-while-revalidate=86400" },
     });
   } catch (err) {
     captureError(err, { route: "GET /api/team" });

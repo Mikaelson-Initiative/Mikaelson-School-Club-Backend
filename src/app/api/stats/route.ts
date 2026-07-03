@@ -21,7 +21,7 @@ export async function GET() {
       totalStudents: studentsAgg._sum.studentsCount || 0,
       retentionRate,
     }, {
-      headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": "public, max-age=0, s-maxage=120, stale-while-revalidate=86400" },
     });
   } catch (error) {
     console.error("Failed to fetch platform stats:", error);
