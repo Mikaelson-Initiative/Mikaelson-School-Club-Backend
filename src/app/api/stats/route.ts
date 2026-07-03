@@ -1,6 +1,6 @@
-// Cached at the edge and revalidated in the background so the homepage stats
-// render instantly instead of waiting on a cold function/database.
-export const revalidate = 120;
+// Briefly cached at the edge for speed, with a short window so admin changes
+// (new chapters, student counts) appear within a minute.
+export const revalidate = 30;
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -21,7 +21,7 @@ export async function GET() {
       totalStudents: studentsAgg._sum.studentsCount || 0,
       retentionRate,
     }, {
-      headers: { "Cache-Control": "public, max-age=0, s-maxage=120, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60" },
     });
   } catch (error) {
     console.error("Failed to fetch platform stats:", error);
