@@ -122,8 +122,41 @@ model SchoolChapter {
   members          User[]
   events           Event[]
   projects         Project[]
+  sponsorships     Sponsorship[]
 
   @@index([isDeleted])
+}
+
+enum SponsorshipType {
+  STUDENT
+  CHAPTER
+}
+
+enum SponsorshipStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// Amounts are stored in kobo (NGN's smallest unit, 1 NGN = 100 kobo) to match
+// Paystack's API and avoid floating-point currency bugs.
+model Sponsorship {
+  id           String             @id @default(uuid())
+  type         SponsorshipType
+  quantity     Int                @default(1)
+  chapterId    String?
+  chapter      SchoolChapter?     @relation(fields: [chapterId], references: [id])
+  amountKobo   Int
+  donorName    String
+  donorEmail   String
+  reference    String             @unique
+  status       SponsorshipStatus  @default(PENDING)
+  paidAt       DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([status])
+  @@index([reference])
 }
 
 enum ApplicationStatus {

@@ -65,6 +65,9 @@ const schema = z.object({
 
   // ── Seed admin password ───────────────────────────────────────────────────
   SEED_ADMIN_PASSWORD: z.string().optional(),
+
+  // ── Paystack (optional — sponsorship payments fail gracefully if unset) ───
+  PAYSTACK_SECRET_KEY: z.string().optional(),
 });
 
 // Parse and validate at module load time

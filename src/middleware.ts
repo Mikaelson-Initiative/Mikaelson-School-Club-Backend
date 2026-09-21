@@ -108,11 +108,13 @@ function classifyRoute(pathname: string) {
   if (pathname === "/api/admin/upload") return "admin_upload" as const;
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) return "admin" as const;
   if (pathname === "/api/apply" || pathname === "/api/contact") return "public_write" as const;
+  if (pathname === "/api/sponsor/initialize") return "public_write" as const;
   if (
     pathname.startsWith("/api/blog") ||
     pathname.startsWith("/api/events") ||
     pathname.startsWith("/api/schools") ||
-    pathname.startsWith("/api/team")
+    pathname.startsWith("/api/team") ||
+    pathname.startsWith("/api/sponsor")
   ) return "public_read" as const;
   return "other" as const;
 }
