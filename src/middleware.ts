@@ -106,9 +106,21 @@ function addCorsHeaders(res: NextResponse, origin: string | null): NextResponse 
 
 function classifyRoute(pathname: string) {
   if (pathname === "/api/admin/upload") return "admin_upload" as const;
+  // Cron jobs authenticate via their own CRON_SECRET bearer-token check
+  // in-route, not a user session — must be exempted before the generic
+  // /api/admin prefix match below, or Vercel Cron's requests (which carry
+  // no session cookie) get rejected by the admin-tier check first and the
+  // job silently never runs.
+  if (pathname.startsWith("/api/admin/cron/")) return "other" as const;
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) return "admin" as const;
-  if (pathname === "/api/apply" || pathname === "/api/contact") return "public_write" as const;
-  if (pathname === "/api/sponsor/initialize") return "public_write" as const;
+  if (
+    pathname.startsWith("/api/apply") ||
+    pathname === "/api/contact" ||
+    pathname === "/api/volunteer" ||
+    pathname === "/api/sponsor/initialize" ||
+    pathname === "/api/auth/callback/credentials"
+  ) return "public_write" as const;
+  if (/^\/api\/events\/[^/]+\/register$/.test(pathname)) return "public_write" as const;
   if (
     pathname.startsWith("/api/blog") ||
     pathname.startsWith("/api/events") ||

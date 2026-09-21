@@ -12,15 +12,14 @@
 
 import { prisma } from "@/lib/prisma";
 import { ok, forbidden, serverError } from "@/lib/api-helpers";
-import { env } from "@/lib/env";
+import { verifyCronSecret } from "@/lib/cron";
 import { captureError } from "@/lib/sentry";
 
 const ARCHIVE_AFTER_DAYS = 90;
 const BATCH_SIZE = 500; // process in batches to avoid memory pressure
 
 export async function POST(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
+  if (!verifyCronSecret(req)) {
     return forbidden("Invalid cron secret.");
   }
 

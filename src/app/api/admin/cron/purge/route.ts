@@ -7,14 +7,13 @@
 
 import { prisma } from "@/lib/prisma";
 import { ok, forbidden, serverError } from "@/lib/api-helpers";
-import { env } from "@/lib/env";
+import { verifyCronSecret } from "@/lib/cron";
 import { captureError } from "@/lib/sentry";
 
 const PURGE_AFTER_DAYS = 30;
 
 export async function POST(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
+  if (!verifyCronSecret(req)) {
     return forbidden("Invalid cron secret.");
   }
 
@@ -27,7 +26,9 @@ export async function POST(req: Request) {
       cutoff
     );
 
-    // 2. Perform hard deletions using raw SQL to bypass the soft-delete extensions
+    // 2. Perform hard deletions using raw SQL to bypass the soft-delete extensions.
+    // `table` is always one of this fixed, hardcoded list — never user input —
+    // so the string interpolation below is safe (same pattern as src/lib/restore.ts).
     const tables = ["User", "SchoolChapter", "Application", "Event", "BlogPost", "TeamMember"];
     const results: Record<string, number> = {};
 

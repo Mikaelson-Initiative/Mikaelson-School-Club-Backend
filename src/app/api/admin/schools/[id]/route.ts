@@ -1,4 +1,4 @@
-import { ok, badRequest, notFound, serverError, getSession } from "@/lib/api-helpers";
+import { ok, badRequest, notFound, serverError, requireRole } from "@/lib/api-helpers";
 import { getRequestMeta }                                     from "@/lib/audit";
 import { updateSchoolSchema }                                 from "@/lib/validators/school";
 import { updateSchool, deleteSchool }                        from "@/services/school.service";
@@ -6,7 +6,9 @@ import { captureError }                                       from "@/lib/sentry
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getSession();
+    const session = await requireRole(["ADMIN", "SUPERADMIN"]);
+    if (session instanceof Response) return session;
+
     const parsed  = updateSchoolSchema.safeParse(await req.json());
     if (!parsed.success) return badRequest(parsed.error.issues[0]?.message ?? "Invalid input.");
 
@@ -23,7 +25,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getSession();
+    const session = await requireRole(["ADMIN", "SUPERADMIN"]);
+    if (session instanceof Response) return session;
+
     const ctx     = { ...getRequestMeta(req), actorId: session?.user?.id, actorEmail: session?.user?.email };
     const result  = await deleteSchool(params.id, ctx);
 

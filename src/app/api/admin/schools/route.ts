@@ -1,5 +1,5 @@
 // src/app/api/admin/schools/route.ts — HTTP adapter only
-import { ok, created, badRequest, serverError, getSession } from "@/lib/api-helpers";
+import { ok, created, badRequest, serverError, requireRole } from "@/lib/api-helpers";
 import { getRequestMeta }                                    from "@/lib/audit";
 import { createSchoolSchema }                                from "@/lib/validators/school";
 import { listAdminSchools, createSchool }                   from "@/services/school.service";
@@ -9,6 +9,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const session = await requireRole(["ADMIN", "SUPERADMIN"]);
+    if (session instanceof Response) return session;
+
     const { searchParams } = new URL(req.url);
     const result = await listAdminSchools({
       status:  searchParams.get("status")  ?? undefined,
@@ -23,7 +26,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getSession();
+    const session = await requireRole(["ADMIN", "SUPERADMIN"]);
+    if (session instanceof Response) return session;
+
     const parsed  = createSchoolSchema.safeParse(await req.json());
     if (!parsed.success) return badRequest(parsed.error.issues[0]?.message ?? "Invalid input.");
 

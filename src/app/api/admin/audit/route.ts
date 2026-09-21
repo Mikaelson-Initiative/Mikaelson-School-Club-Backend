@@ -1,5 +1,5 @@
 // src/app/api/admin/audit/route.ts — HTTP adapter only
-import { ok, serverError } from "@/lib/api-helpers";
+import { ok, serverError, requireRole } from "@/lib/api-helpers";
 import { listAuditLogs }   from "@/services/audit.service";
 import { captureError }    from "@/lib/sentry";
 
@@ -7,6 +7,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const session = await requireRole(["ADMIN", "SUPERADMIN"]);
+    if (session instanceof Response) return session;
+
     const { searchParams } = new URL(req.url);
     return ok(await listAuditLogs({
       actorId:  searchParams.get("actorId")  ?? undefined,

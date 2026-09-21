@@ -87,5 +87,8 @@ export async function verifyTransaction(reference: string): Promise<VerifyTransa
 export function verifyWebhookSignature(rawBody: string, signatureHeader: string | null): boolean {
   if (!signatureHeader) return false;
   const hash = crypto.createHmac("sha512", getSecretKey()).update(rawBody).digest("hex");
-  return hash === signatureHeader;
+  const expected = Buffer.from(hash, "hex");
+  const actual = Buffer.from(signatureHeader, "hex");
+  if (expected.length !== actual.length) return false;
+  return crypto.timingSafeEqual(expected, actual);
 }
