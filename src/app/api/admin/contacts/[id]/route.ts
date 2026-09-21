@@ -1,4 +1,4 @@
-import { ok, badRequest, notFound, serverError, getSession } from "@/lib/api-helpers";
+import { ok, badRequest, notFound, serverError, forbidden, getSession } from "@/lib/api-helpers";
 import { getRequestMeta }                                     from "@/lib/audit";
 import { updateContactSchema }                                from "@/lib/validators/contact";
 import { updateContact }                                      from "@/services/contact.service";
@@ -7,6 +7,10 @@ import { captureError }                                       from "@/lib/sentry
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await getSession();
+    if (!session || (session.user.role !== "ADMIN" && session.user.role !== "SUPERADMIN")) {
+      return forbidden();
+    }
+
     const parsed  = updateContactSchema.safeParse(await req.json());
     if (!parsed.success) return badRequest(parsed.error.issues[0]?.message ?? "Invalid input.");
 

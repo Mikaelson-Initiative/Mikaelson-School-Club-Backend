@@ -70,7 +70,7 @@ async function main() {
       role: i === 0 ? "Executive Director" : `Director of Dept ${i}`,
       email: `team${i + 1}@mikaelsoninitiative.org`,
       bio: `A dedicated member of the Mikaelson Initiative since 202${i % 4}.`,
-      avatarUrl: "https://via.placeholder.com/400",
+      avatarUrl: null,
       sortOrder: i,
     }));
     await prisma.teamMember.createMany({ data: team });
