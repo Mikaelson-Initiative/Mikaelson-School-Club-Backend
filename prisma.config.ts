@@ -4,7 +4,8 @@ import { defineConfig } from "prisma/config";
 export default defineConfig({
   schema: "./prisma/schema.prisma",
   datasource: {
-    // This safely reads DATABASE_URL from your .env file
-    url: process.env.DATABASE_URL ?? "", 
+    // Migrations/introspection need the direct (unpooled) connection —
+    // the app itself connects via DATABASE_URL (pooled) through the pg adapter at runtime.
+    url: process.env.DIRECT_DATABASE_URL ?? "",
   },
 });

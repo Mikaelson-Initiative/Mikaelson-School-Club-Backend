@@ -294,7 +294,7 @@ npm run db:seed
 npm run dev
 ```
 
-The seed creates a SUPERADMIN at `happiness@mikaelsoninitiative.org` with the password from `SEED_ADMIN_PASSWORD`. This variable is **required** — the seed script throws if it isn't set, so there is no default password.
+The seed creates a SUPERADMIN at `msc@mikaelsoninitiative.org` with the password from `SEED_ADMIN_PASSWORD`. This variable is **required** — the seed script throws if it isn't set, so there is no default password.
 
 ---
 

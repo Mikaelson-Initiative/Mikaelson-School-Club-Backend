@@ -11,7 +11,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("Starting seeding process...");
-  const adminEmail = "happiness@mikaelsoninitiative.org";
+  const adminEmail = "msc@mikaelsoninitiative.org";
 
   // 1. Check if admin already exists
   const existing = await prisma.user.findFirst({
