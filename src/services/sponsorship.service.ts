@@ -159,6 +159,25 @@ export async function verifySponsorship(reference: string): Promise<VerifySponso
   }
 }
 
+export async function listSponsorships(options: {
+  status?: "PENDING" | "SUCCESS" | "FAILED";
+  type?: "STUDENT" | "CHAPTER";
+  page: number;
+  limit: number;
+}) {
+  const { items, total } = await sponsorshipRepository.list(options);
+  const summary = await sponsorshipRepository.summary();
+
+  return {
+    sponsorships: items,
+    total,
+    page: options.page,
+    limit: options.limit,
+    hasNextPage: (options.page - 1) * options.limit + items.length < total,
+    summary,
+  };
+}
+
 export async function finalizeSponsorshipFromWebhook(
   reference: string,
   paystackStatus: string,
