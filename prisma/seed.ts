@@ -19,7 +19,12 @@ async function main() {
   });
 
   if (!existing) {
-    const password = process.env.SEED_ADMIN_PASSWORD || "happiness@123";
+    const password = process.env.SEED_ADMIN_PASSWORD;
+    if (!password) {
+      throw new Error(
+        "SEED_ADMIN_PASSWORD must be set to seed the default admin account."
+      );
+    }
     const passwordHash = await bcrypt.hash(password, 12);
 
     await prisma.user.create({

@@ -106,7 +106,6 @@ function addCorsHeaders(res: NextResponse, origin: string | null): NextResponse 
 
 function classifyRoute(pathname: string) {
   if (pathname === "/api/admin/upload") return "admin_upload" as const;
-  if (pathname === "/api/admin/auth") return "other" as const;
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) return "admin" as const;
   if (pathname === "/api/apply" || pathname === "/api/contact") return "public_write" as const;
   if (

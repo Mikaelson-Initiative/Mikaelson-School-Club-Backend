@@ -294,7 +294,7 @@ npm run db:seed
 npm run dev
 ```
 
-The seed creates a SUPERADMIN at `admin@mikaelsoninitiative.org` with password from `SEED_ADMIN_PASSWORD` (defaults to `ChangeMe2024!` if unset — **change this immediately** in any real environment).
+The seed creates a SUPERADMIN at `happiness@mikaelsoninitiative.org` with the password from `SEED_ADMIN_PASSWORD`. This variable is **required** — the seed script throws if it isn't set, so there is no default password.
 
 ---
 
@@ -315,7 +315,7 @@ See `.env.example` for the full annotated list. Summary by category:
 | File uploads | `BLOB_READ_WRITE_TOKEN` (optional) | Vercel dashboard → Storage → Blob |
 | Monitoring | `SENTRY_DSN`, `SENTRY_AUTH_TOKEN` (optional) | Sentry project settings |
 | CORS | `ALLOWED_ORIGINS` | Comma-separated list of your production domains |
-| Seed | `SEED_ADMIN_PASSWORD` (optional, dev only) | Set your own, never use the default in production |
+| Seed | `SEED_ADMIN_PASSWORD` (required to run `db:seed`) | Set your own strong password — there is no default |
 
 **Important**: `FIREBASE_PRIVATE_KEY` must have literal `\n` characters in the `.env` file, not real newlines — `firebase-admin.ts` converts them at runtime.
 
