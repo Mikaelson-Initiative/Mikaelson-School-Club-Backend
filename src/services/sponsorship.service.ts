@@ -8,6 +8,7 @@ import { schoolRepository } from "@/repositories/school.repository";
 import { initializeTransaction, verifyTransaction } from "@/lib/paystack";
 import { writeAuditLog } from "@/lib/audit";
 import { captureError } from "@/lib/sentry";
+import { sendSponsorshipReceipt, sendSponsorshipAlert } from "@/lib/mailer";
 import type { InitializeSponsorshipInput } from "@/lib/validators/sponsorship";
 
 interface ActorContext {
@@ -108,6 +109,43 @@ export type VerifySponsorshipResult =
     }
   | { success: false; error: string; status: number };
 
+function notifySponsorshipSuccess(sponsorship: {
+  id: string;
+  type: "STUDENT" | "CHAPTER";
+  quantity: number;
+  amountKobo: number;
+  donorName: string;
+  donorEmail: string;
+  reference: string;
+  chapter: { name: string } | null;
+}) {
+  const amountNgn = sponsorship.amountKobo / 100;
+  Promise.allSettled([
+    sendSponsorshipReceipt({
+      to: sponsorship.donorEmail,
+      donorName: sponsorship.donorName,
+      type: sponsorship.type,
+      quantity: sponsorship.quantity,
+      chapterName: sponsorship.chapter?.name ?? null,
+      amountNgn,
+      reference: sponsorship.reference,
+    }),
+    sendSponsorshipAlert({
+      donorName: sponsorship.donorName,
+      donorEmail: sponsorship.donorEmail,
+      type: sponsorship.type,
+      quantity: sponsorship.quantity,
+      chapterName: sponsorship.chapter?.name ?? null,
+      amountNgn,
+      reference: sponsorship.reference,
+    }),
+  ]).then((results) => {
+    results.forEach((r) => {
+      if (r.status === "rejected") captureError(r.reason, { route: "notifySponsorshipSuccess" });
+    });
+  });
+}
+
 export async function verifySponsorship(reference: string): Promise<VerifySponsorshipResult> {
   const sponsorship = await sponsorshipRepository.findByReference(reference);
   if (!sponsorship) {
@@ -143,6 +181,10 @@ export async function verifySponsorship(reference: string): Promise<VerifySponso
       before: { status: "PENDING" },
       after: { status: finalStatus },
     });
+
+    if (finalStatus === "SUCCESS") {
+      notifySponsorshipSuccess({ ...sponsorship, amountKobo: updated.amountKobo });
+    }
 
     return {
       success: true,
@@ -187,7 +229,7 @@ export async function finalizeSponsorshipFromWebhook(
   if (!sponsorship || sponsorship.status !== "PENDING") return; // unknown or already finalized — idempotent no-op
 
   const finalStatus = paystackStatus === "success" ? "SUCCESS" : "FAILED";
-  await sponsorshipRepository.markStatus(reference, finalStatus, paidAt ? new Date(paidAt) : null);
+  const updated = await sponsorshipRepository.markStatus(reference, finalStatus, paidAt ? new Date(paidAt) : null);
 
   await writeAuditLog({
     action: "UPDATE",
@@ -196,4 +238,8 @@ export async function finalizeSponsorshipFromWebhook(
     before: { status: "PENDING" },
     after: { status: finalStatus, via: "webhook" },
   });
+
+  if (finalStatus === "SUCCESS") {
+    notifySponsorshipSuccess({ ...sponsorship, amountKobo: updated.amountKobo });
+  }
 }

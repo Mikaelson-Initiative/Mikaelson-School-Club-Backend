@@ -5,6 +5,7 @@ import { updateApplicationSchema }                          from "@/lib/validato
 import { writeAuditLog }                                    from "@/lib/audit";
 import { captureError }                                     from "@/lib/sentry";
 import { ApplicationStatus }                                from "@prisma/client";
+import { sendMentorStatusUpdateEmail }                      from "@/lib/mailer";
 
 export async function PATCH(
   req: Request,
@@ -44,6 +45,14 @@ export async function PATCH(
       before:     { status: existing.status },
       after:      { status: updated.status },
     });
+
+    if (parsed.data.status) {
+      sendMentorStatusUpdateEmail({
+        to: existing.email,
+        name: existing.name,
+        newStatus: parsed.data.status,
+      }).catch((e) => captureError(e, { route: "sendMentorStatusUpdateEmail" }));
+    }
 
     return ok({ success: true, application: updated });
   } catch (err) {

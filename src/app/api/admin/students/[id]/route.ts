@@ -5,7 +5,7 @@ import { updateApplicationSchema }                          from "@/lib/validato
 import { writeAuditLog }                                    from "@/lib/audit";
 import { captureError }                                     from "@/lib/sentry";
 import { ApplicationStatus }                                from "@prisma/client";
-import { sendStudentConfirmation }                          from "@/lib/mailer"; // For status updates if email existed
+import { sendStudentStatusUpdateEmail }                     from "@/lib/mailer";
 
 export async function PATCH(
   req: Request,
@@ -45,6 +45,14 @@ export async function PATCH(
       before:     { status: existing.status },
       after:      { status: updated.status },
     });
+
+    if (parsed.data.status && existing.email) {
+      sendStudentStatusUpdateEmail({
+        to: existing.email,
+        name: existing.name,
+        newStatus: parsed.data.status,
+      }).catch((e) => captureError(e, { route: "sendStudentStatusUpdateEmail" }));
+    }
 
     return ok({ success: true, application: updated });
   } catch (err) {

@@ -335,6 +335,70 @@ export async function sendMentorAlert(data: {
   }
 }
 
+const STUDENT_STATUS_MESSAGES: Record<string, string> = {
+  REVIEWED: "Your application has been reviewed by our team.",
+  SCHEDULED: "We would like to schedule a call with you. Check your inbox for a calendar invite.",
+  TRAINING: "Congratulations! Your application has been accepted and your onboarding begins now. Welcome aboard!",
+  LAUNCHED: "You're officially part of the Mikaelson School Club. Welcome!",
+  REJECTED:
+    "After careful consideration, we are unable to proceed with your application at this time. We encourage you to reapply in a future cycle.",
+};
+
+export async function sendStudentStatusUpdateEmail(data: {
+  to: string;
+  name: string;
+  newStatus: string;
+}) {
+  const body = STUDENT_STATUS_MESSAGES[data.newStatus];
+  if (!body) return;
+  const html = buildEmailTemplate(`
+    <p>Hi ${data.name},</p>
+    <p>${body}</p>
+    <p>If you have questions, reply to this email or contact us at
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
+  `);
+
+  return resend.emails.send({
+    from: FROM,
+    to: data.to,
+    subject: "Update on your student application — Mikaelson School Club",
+    html,
+  });
+}
+
+const MENTOR_STATUS_MESSAGES: Record<string, string> = {
+  REVIEWED: "Your Champion application has been reviewed by our team.",
+  SCHEDULED: "We would like to schedule a call with you. Check your inbox for a calendar invite.",
+  TRAINING: "Your Champion training programme has begun. Welcome aboard!",
+  LAUNCHED: "You're officially a Mikaelson School Club Champion. Congratulations!",
+  REJECTED:
+    "After careful consideration, we are unable to proceed with your application at this time. We encourage you to reapply in a future cycle.",
+};
+
+export async function sendMentorStatusUpdateEmail(data: {
+  to: string;
+  name: string;
+  newStatus: string;
+}) {
+  const body = MENTOR_STATUS_MESSAGES[data.newStatus];
+  if (!body) return;
+  const html = buildEmailTemplate(`
+    <p>Hi ${data.name},</p>
+    <p>${body}</p>
+    <p>If you have questions, reply to this email or contact us at
+       <a href="mailto:msc@mikaelsoninitiative.org">msc@mikaelsoninitiative.org</a>.</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
+  `);
+
+  return resend.emails.send({
+    from: FROM,
+    to: data.to,
+    subject: "Update on your Champion application — Mikaelson School Club",
+    html,
+  });
+}
+
 // ── Contact emails ────────────────────────────────────────────────────────────
 
 export async function sendContactAlert(data: {
@@ -641,4 +705,74 @@ export async function sendVolunteerStatusUpdateEmail(data: {
     subject: "Update on your volunteer application — Mikaelson School Club",
     html,
   });
+}
+
+// ── Sponsorship emails ───────────────────────────────────────────────────────
+
+export async function sendSponsorshipReceipt(data: {
+  to: string;
+  donorName: string;
+  type: "STUDENT" | "CHAPTER";
+  quantity: number;
+  chapterName?: string | null;
+  amountNgn: number;
+  reference: string;
+}) {
+  const description =
+    data.type === "STUDENT"
+      ? `${data.quantity} student${data.quantity > 1 ? "s" : ""}`
+      : `the full "${data.chapterName}" chapter`;
+
+  const html = buildEmailTemplate(`
+    <p>Hi ${data.donorName},</p>
+    <p>Thank you for sponsoring ${description} with the Mikaelson School Club! Your payment of
+       <strong>₦${data.amountNgn.toLocaleString("en-NG")}</strong> was received successfully.</p>
+    <p>Reference: <strong>${data.reference}</strong></p>
+    <p>Your support goes directly toward running the programme — thank you for backing the next generation
+       of African leaders.</p>
+    <p>Warm regards,<br/>The Mikaelson School Club Team</p>
+  `);
+
+  return resend.emails.send({
+    from: FROM,
+    to: data.to,
+    subject: "Thank you for your sponsorship — Mikaelson School Club",
+    html,
+  });
+}
+
+export async function sendSponsorshipAlert(data: {
+  donorName: string;
+  donorEmail: string;
+  type: "STUDENT" | "CHAPTER";
+  quantity: number;
+  chapterName?: string | null;
+  amountNgn: number;
+  reference: string;
+}) {
+  const html = buildEmailTemplate(`
+    <h2>New Sponsorship Received</h2>
+    <table>
+      <tr><td>Donor</td><td>${data.donorName} (${data.donorEmail})</td></tr>
+      <tr><td>Type</td><td>${data.type === "STUDENT" ? `${data.quantity} student(s)` : `Chapter — ${data.chapterName}`}</td></tr>
+      <tr><td>Amount</td><td>₦${data.amountNgn.toLocaleString("en-NG")}</td></tr>
+      <tr><td>Reference</td><td>${data.reference}</td></tr>
+    </table>
+    <p style="text-align: center;">
+      <a href="${ADMIN_DASHBOARD_URL}" class="btn">
+        View in admin dashboard →
+      </a>
+    </p>
+  `);
+
+  try {
+    return resend.emails.send({
+      from: FROM,
+      to: "msc@mikaelsoninitiative.org",
+      subject: `New sponsorship: ₦${data.amountNgn.toLocaleString("en-NG")} from ${data.donorName}`,
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send sponsorship alert:", error);
+  }
 }

@@ -94,6 +94,7 @@ export type UpdateApplicationInput = z.infer<typeof updateApplicationSchema>;
 
 export const studentApplySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(100).trim(),
+  email: z.string().email("Invalid email address.").max(254).trim().toLowerCase(),
   school: z.string().min(2, "School name is required.").max(200).trim(),
   year: z.string().min(1, "Year is required.").max(50).trim(),
   city: z.string().min(2, "City is required.").max(100).trim(),

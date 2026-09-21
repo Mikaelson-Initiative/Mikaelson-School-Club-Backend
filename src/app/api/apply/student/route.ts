@@ -2,7 +2,7 @@
 import { created, badRequest, serverError } from "@/lib/api-helpers";
 import { studentApplySchema }               from "@/lib/validators/application";
 import { prisma }                           from "@/lib/prisma";
-import { sendStudentAlert }                 from "@/lib/mailer";
+import { sendStudentAlert, sendStudentConfirmation } from "@/lib/mailer";
 import { captureError }                     from "@/lib/sentry";
 
 export async function POST(req: Request) {
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     const application = await prisma.studentApplication.create({
       data: {
         name: data.name,
+        email: data.email,
         school: data.school,
         year: data.year,
         city: data.city,
@@ -38,8 +39,11 @@ export async function POST(req: Request) {
       }
     });
 
-    // We don't have an email field for students on the current form, so we just alert admin
     Promise.allSettled([
+      sendStudentConfirmation({
+        to: data.email,
+        name: data.name,
+      }),
       sendStudentAlert({
         name: data.name,
         school: data.school,
