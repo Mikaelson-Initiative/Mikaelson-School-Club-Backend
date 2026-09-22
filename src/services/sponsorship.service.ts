@@ -20,6 +20,9 @@ interface ActorContext {
 export const STUDENT_PRICE_NGN = 15_000;
 export const CHAPTER_STUDENT_COUNT = 40;
 export const CHAPTER_PRICE_NGN = STUDENT_PRICE_NGN * CHAPTER_STUDENT_COUNT;
+// TEMPORARY — see schema.prisma's SponsorshipType comment. Remove this and
+// the "TEST" branch below once the live Paystack integration is confirmed.
+export const TEST_PRICE_NGN = 100;
 
 export type InitializeSponsorshipResult =
   | { success: true; authorizationUrl: string; reference: string }
@@ -38,6 +41,8 @@ export async function initializeSponsorship(
   if (input.type === "STUDENT") {
     quantity = input.quantity;
     amountNgn = STUDENT_PRICE_NGN * quantity;
+  } else if (input.type === "TEST") {
+    amountNgn = TEST_PRICE_NGN;
   } else {
     const chapter = await schoolRepository.findById(input.chapterId!);
     if (!chapter) {
@@ -101,7 +106,7 @@ export type VerifySponsorshipResult =
   | {
       success: true;
       status: "SUCCESS" | "FAILED" | "PENDING";
-      type: "STUDENT" | "CHAPTER";
+      type: "STUDENT" | "CHAPTER" | "TEST";
       quantity: number;
       chapterName: string | null;
       amountKobo: number;
@@ -111,7 +116,7 @@ export type VerifySponsorshipResult =
 
 function notifySponsorshipSuccess(sponsorship: {
   id: string;
-  type: "STUDENT" | "CHAPTER";
+  type: "STUDENT" | "CHAPTER" | "TEST";
   quantity: number;
   amountKobo: number;
   donorName: string;
@@ -203,7 +208,7 @@ export async function verifySponsorship(reference: string): Promise<VerifySponso
 
 export async function listSponsorships(options: {
   status?: "PENDING" | "SUCCESS" | "FAILED";
-  type?: "STUDENT" | "CHAPTER";
+  type?: "STUDENT" | "CHAPTER" | "TEST";
   page: number;
   limit: number;
 }) {

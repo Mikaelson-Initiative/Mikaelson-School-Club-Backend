@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const status = (searchParams.get("status") as "PENDING" | "SUCCESS" | "FAILED" | null) || undefined;
-    const type = (searchParams.get("type") as "STUDENT" | "CHAPTER" | null) || undefined;
+    const type = (searchParams.get("type") as "STUDENT" | "CHAPTER" | "TEST" | null) || undefined;
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1);
     const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "20", 10) || 20));
 

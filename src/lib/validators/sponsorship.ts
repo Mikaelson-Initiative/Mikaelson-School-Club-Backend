@@ -1,7 +1,8 @@
 // src/lib/validators/sponsorship.ts
 import { z } from "zod";
 
-export const SponsorshipTypeEnum = z.enum(["STUDENT", "CHAPTER"]);
+// TEST is TEMPORARY — see schema.prisma's SponsorshipType comment.
+export const SponsorshipTypeEnum = z.enum(["STUDENT", "CHAPTER", "TEST"]);
 
 // POST /api/sponsor/initialize
 // Pricing is never trusted from the client — only type/quantity/chapterId are

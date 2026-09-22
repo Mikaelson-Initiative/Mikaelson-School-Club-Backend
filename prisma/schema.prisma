@@ -130,6 +130,9 @@ model SchoolChapter {
 enum SponsorshipType {
   STUDENT
   CHAPTER
+  TEST // TEMPORARY — ₦100 fixed-price option for verifying the live Paystack
+       // integration end-to-end. Remove this value (and its handling in
+       // sponsorship.service.ts / SponsorModal.tsx) once that's confirmed.
 }
 
 enum SponsorshipStatus {

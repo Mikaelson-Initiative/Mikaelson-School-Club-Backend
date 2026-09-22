@@ -712,7 +712,7 @@ export async function sendVolunteerStatusUpdateEmail(data: {
 export async function sendSponsorshipReceipt(data: {
   to: string;
   donorName: string;
-  type: "STUDENT" | "CHAPTER";
+  type: "STUDENT" | "CHAPTER" | "TEST";
   quantity: number;
   chapterName?: string | null;
   amountNgn: number;
@@ -721,7 +721,9 @@ export async function sendSponsorshipReceipt(data: {
   const description =
     data.type === "STUDENT"
       ? `${data.quantity} student${data.quantity > 1 ? "s" : ""}`
-      : `the full "${data.chapterName}" chapter`;
+      : data.type === "CHAPTER"
+      ? `the full "${data.chapterName}" chapter`
+      : "the Mikaelson School Club programme"; // TEST type
 
   const html = buildEmailTemplate(`
     <p>Hi ${data.donorName},</p>
@@ -744,17 +746,23 @@ export async function sendSponsorshipReceipt(data: {
 export async function sendSponsorshipAlert(data: {
   donorName: string;
   donorEmail: string;
-  type: "STUDENT" | "CHAPTER";
+  type: "STUDENT" | "CHAPTER" | "TEST";
   quantity: number;
   chapterName?: string | null;
   amountNgn: number;
   reference: string;
 }) {
+  const typeLabel =
+    data.type === "STUDENT"
+      ? `${data.quantity} student(s)`
+      : data.type === "CHAPTER"
+      ? `Chapter — ${data.chapterName}`
+      : "TEST (live-mode verification)";
   const html = buildEmailTemplate(`
     <h2>New Sponsorship Received</h2>
     <table>
       <tr><td>Donor</td><td>${data.donorName} (${data.donorEmail})</td></tr>
-      <tr><td>Type</td><td>${data.type === "STUDENT" ? `${data.quantity} student(s)` : `Chapter — ${data.chapterName}`}</td></tr>
+      <tr><td>Type</td><td>${typeLabel}</td></tr>
       <tr><td>Amount</td><td>₦${data.amountNgn.toLocaleString("en-NG")}</td></tr>
       <tr><td>Reference</td><td>${data.reference}</td></tr>
     </table>
