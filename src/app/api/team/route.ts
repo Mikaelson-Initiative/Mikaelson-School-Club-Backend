@@ -1,9 +1,8 @@
 // src/app/api/team/route.ts
 // GET /api/team — Public
 
-// Briefly cached at the edge for speed, but with a short window so admin edits
-// (team members, order, etc.) appear within a minute rather than lingering.
-export const revalidate = 30;
+// Always fresh so admin edits (members, photos, order) show immediately.
+export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -27,7 +26,7 @@ export async function GET() {
     });
 
     return NextResponse.json(members, {
-      headers: { "Cache-Control": "public, max-age=0, s-maxage=30, stale-while-revalidate=60" },
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (err) {
     captureError(err, { route: "GET /api/team" });
